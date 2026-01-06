@@ -11,8 +11,8 @@ import {
   LogOut,
   Menu,
   X,
-  Fuel,
 } from 'lucide-react';
+import logo from '@/assets/logo.png';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -53,9 +53,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center gap-3 border-b border-sidebar-border px-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sidebar-primary">
-              <Fuel className="h-5 w-5 text-sidebar-primary-foreground" />
-            </div>
+            <img src={logo} alt="DOST Logo" className="h-10 w-10 rounded-lg" />
             <div>
               <h1 className="font-bold text-sidebar-foreground">DOST-CAR</h1>
               <p className="text-xs text-sidebar-foreground/70">Fuel Report System</p>
