@@ -298,31 +298,109 @@ export type Database = {
       }
       vehicles: {
         Row: {
+          body_type: string | null
+          chassis_no: string | null
+          color: string | null
+          cr_no: string | null
           created_at: string | null
           description: string | null
+          encumbered_to: string | null
+          engine_no: string | null
+          file_no: string | null
+          fuel_type: string | null
+          gross_weight: number | null
           id: string
           is_active: boolean | null
+          make_brand: string | null
+          max_power: string | null
+          mv_file_no: string | null
+          net_weight: number | null
+          or_date: string | null
+          or_no: string | null
+          owner_address: string | null
+          owner_name: string | null
+          passenger_capacity: number | null
+          piston_displacement: string | null
           plate_no: string
+          registration_classification: string | null
+          registration_image_url: string | null
+          remarks: string | null
+          series: string | null
           updated_at: string | null
+          vehicle_category: string | null
           vehicle_type: string | null
+          year_model: string | null
+          year_rebuilt: string | null
         }
         Insert: {
+          body_type?: string | null
+          chassis_no?: string | null
+          color?: string | null
+          cr_no?: string | null
           created_at?: string | null
           description?: string | null
+          encumbered_to?: string | null
+          engine_no?: string | null
+          file_no?: string | null
+          fuel_type?: string | null
+          gross_weight?: number | null
           id?: string
           is_active?: boolean | null
+          make_brand?: string | null
+          max_power?: string | null
+          mv_file_no?: string | null
+          net_weight?: number | null
+          or_date?: string | null
+          or_no?: string | null
+          owner_address?: string | null
+          owner_name?: string | null
+          passenger_capacity?: number | null
+          piston_displacement?: string | null
           plate_no: string
+          registration_classification?: string | null
+          registration_image_url?: string | null
+          remarks?: string | null
+          series?: string | null
           updated_at?: string | null
+          vehicle_category?: string | null
           vehicle_type?: string | null
+          year_model?: string | null
+          year_rebuilt?: string | null
         }
         Update: {
+          body_type?: string | null
+          chassis_no?: string | null
+          color?: string | null
+          cr_no?: string | null
           created_at?: string | null
           description?: string | null
+          encumbered_to?: string | null
+          engine_no?: string | null
+          file_no?: string | null
+          fuel_type?: string | null
+          gross_weight?: number | null
           id?: string
           is_active?: boolean | null
+          make_brand?: string | null
+          max_power?: string | null
+          mv_file_no?: string | null
+          net_weight?: number | null
+          or_date?: string | null
+          or_no?: string | null
+          owner_address?: string | null
+          owner_name?: string | null
+          passenger_capacity?: number | null
+          piston_displacement?: string | null
           plate_no?: string
+          registration_classification?: string | null
+          registration_image_url?: string | null
+          remarks?: string | null
+          series?: string | null
           updated_at?: string | null
+          vehicle_category?: string | null
           vehicle_type?: string | null
+          year_model?: string | null
+          year_rebuilt?: string | null
         }
         Relationships: []
       }
