@@ -16,28 +16,49 @@ export type Database = {
     Tables: {
       drivers: {
         Row: {
+          address: string | null
+          birthdate: string | null
           created_at: string | null
           full_name: string
+          height: number | null
           id: string
           is_active: boolean | null
+          license_image_url: string | null
           license_no: string | null
+          nationality: string | null
+          sex: string | null
           updated_at: string | null
+          weight: number | null
         }
         Insert: {
+          address?: string | null
+          birthdate?: string | null
           created_at?: string | null
           full_name: string
+          height?: number | null
           id?: string
           is_active?: boolean | null
+          license_image_url?: string | null
           license_no?: string | null
+          nationality?: string | null
+          sex?: string | null
           updated_at?: string | null
+          weight?: number | null
         }
         Update: {
+          address?: string | null
+          birthdate?: string | null
           created_at?: string | null
           full_name?: string
+          height?: number | null
           id?: string
           is_active?: boolean | null
+          license_image_url?: string | null
           license_no?: string | null
+          nationality?: string | null
+          sex?: string | null
           updated_at?: string | null
+          weight?: number | null
         }
         Relationships: []
       }
