@@ -2,3 +2,6 @@ project_id = "icwgtmtvksqlbotvuhun"
 
 [functions.extract-license-info]
 verify_jwt = false
+
+[functions.extract-vehicle-info]
+verify_jwt = false
