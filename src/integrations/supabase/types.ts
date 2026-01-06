@@ -14,16 +14,313 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      drivers: {
+        Row: {
+          created_at: string | null
+          full_name: string
+          id: string
+          is_active: boolean | null
+          license_no: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          license_no?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          license_no?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          position: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          position?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          position?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      trip_details: {
+        Row: {
+          arrival_place: string | null
+          arrival_time: string | null
+          departure_place: string | null
+          departure_time: string | null
+          id: string
+          odometer_end: number | null
+          odometer_initial: number | null
+          sort_order: number | null
+          trip_date: string | null
+          trip_no: number
+          trip_ticket_id: string
+        }
+        Insert: {
+          arrival_place?: string | null
+          arrival_time?: string | null
+          departure_place?: string | null
+          departure_time?: string | null
+          id?: string
+          odometer_end?: number | null
+          odometer_initial?: number | null
+          sort_order?: number | null
+          trip_date?: string | null
+          trip_no: number
+          trip_ticket_id: string
+        }
+        Update: {
+          arrival_place?: string | null
+          arrival_time?: string | null
+          departure_place?: string | null
+          departure_time?: string | null
+          id?: string
+          odometer_end?: number | null
+          odometer_initial?: number | null
+          sort_order?: number | null
+          trip_date?: string | null
+          trip_no?: number
+          trip_ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_details_trip_ticket_id_fkey"
+            columns: ["trip_ticket_id"]
+            isOneToOne: false
+            referencedRelation: "trip_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_ticket_destinations: {
+        Row: {
+          destination: string
+          id: string
+          sort_order: number | null
+          trip_ticket_id: string
+        }
+        Insert: {
+          destination: string
+          id?: string
+          sort_order?: number | null
+          trip_ticket_id: string
+        }
+        Update: {
+          destination?: string
+          id?: string
+          sort_order?: number | null
+          trip_ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_ticket_destinations_trip_ticket_id_fkey"
+            columns: ["trip_ticket_id"]
+            isOneToOne: false
+            referencedRelation: "trip_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_ticket_passengers: {
+        Row: {
+          id: string
+          passenger_name: string
+          sort_order: number | null
+          trip_ticket_id: string
+        }
+        Insert: {
+          id?: string
+          passenger_name: string
+          sort_order?: number | null
+          trip_ticket_id: string
+        }
+        Update: {
+          id?: string
+          passenger_name?: string
+          sort_order?: number | null
+          trip_ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_ticket_passengers_trip_ticket_id_fkey"
+            columns: ["trip_ticket_id"]
+            isOneToOne: false
+            referencedRelation: "trip_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_tickets: {
+        Row: {
+          balance_tank_end: number | null
+          balance_tank_start: number | null
+          brake_fluid_used: number | null
+          created_at: string | null
+          created_by: string | null
+          driver_id: string | null
+          gasoline_used: number | null
+          gear_oil_used: number | null
+          grease_used: number | null
+          id: string
+          issued_from_stock: number | null
+          motor_oil_used: number | null
+          purchased_outside: number | null
+          purpose: string | null
+          status: string | null
+          ticket_date: string
+          total_distance: number | null
+          tr_no: string
+          updated_at: string | null
+          vehicle_id: string | null
+        }
+        Insert: {
+          balance_tank_end?: number | null
+          balance_tank_start?: number | null
+          brake_fluid_used?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          driver_id?: string | null
+          gasoline_used?: number | null
+          gear_oil_used?: number | null
+          grease_used?: number | null
+          id?: string
+          issued_from_stock?: number | null
+          motor_oil_used?: number | null
+          purchased_outside?: number | null
+          purpose?: string | null
+          status?: string | null
+          ticket_date?: string
+          total_distance?: number | null
+          tr_no: string
+          updated_at?: string | null
+          vehicle_id?: string | null
+        }
+        Update: {
+          balance_tank_end?: number | null
+          balance_tank_start?: number | null
+          brake_fluid_used?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          driver_id?: string | null
+          gasoline_used?: number | null
+          gear_oil_used?: number | null
+          grease_used?: number | null
+          id?: string
+          issued_from_stock?: number | null
+          motor_oil_used?: number | null
+          purchased_outside?: number | null
+          purpose?: string | null
+          status?: string | null
+          ticket_date?: string
+          total_distance?: number | null
+          tr_no?: string
+          updated_at?: string | null
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_tickets_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_tickets_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          plate_no: string
+          updated_at: string | null
+          vehicle_type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          plate_no: string
+          updated_at?: string | null
+          vehicle_type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          plate_no?: string
+          updated_at?: string | null
+          vehicle_type?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_tr_no: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +447,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
