@@ -1,1 +1,4 @@
 project_id = "icwgtmtvksqlbotvuhun"
+
+[functions.extract-license-info]
+verify_jwt = false

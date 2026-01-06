@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,15 +31,31 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Plus, Users, Pencil, Trash2, Loader2 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Plus, Users, Pencil, Trash2, Loader2, Upload, Image, Eye, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Driver {
   id: string;
   full_name: string;
   license_no: string | null;
   is_active: boolean;
+  nationality: string | null;
+  sex: string | null;
+  birthdate: string | null;
+  weight: number | null;
+  height: number | null;
+  address: string | null;
+  license_image_url: string | null;
 }
 
 export default function Drivers() {
@@ -52,8 +68,19 @@ export default function Drivers() {
     full_name: '',
     license_no: '',
     is_active: true,
+    nationality: '',
+    sex: '',
+    birthdate: '',
+    weight: '',
+    height: '',
+    address: '',
   });
   const [submitting, setSubmitting] = useState(false);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [licensePreview, setLicensePreview] = useState<string | null>(null);
+  const [extracting, setExtracting] = useState(false);
+  const [viewingLicense, setViewingLicense] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -85,55 +112,172 @@ export default function Drivers() {
         full_name: driver.full_name,
         license_no: driver.license_no || '',
         is_active: driver.is_active,
+        nationality: driver.nationality || '',
+        sex: driver.sex || '',
+        birthdate: driver.birthdate || '',
+        weight: driver.weight?.toString() || '',
+        height: driver.height?.toString() || '',
+        address: driver.address || '',
       });
+      setLicensePreview(driver.license_image_url);
     } else {
       setEditingDriver(null);
       setFormData({
         full_name: '',
         license_no: '',
         is_active: true,
+        nationality: '',
+        sex: '',
+        birthdate: '',
+        weight: '',
+        height: '',
+        address: '',
       });
+      setLicensePreview(null);
     }
+    setLicenseFile(null);
     setDialogOpen(true);
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLicenseFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setLicensePreview(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const extractLicenseInfo = async () => {
+    if (!licensePreview) return;
+
+    setExtracting(true);
+    try {
+      const response = await supabase.functions.invoke('extract-license-info', {
+        body: { imageBase64: licensePreview }
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      const data = response.data?.data;
+      if (data) {
+        setFormData(prev => ({
+          ...prev,
+          full_name: data.full_name || prev.full_name,
+          license_no: data.license_no || prev.license_no,
+          nationality: data.nationality || prev.nationality,
+          sex: data.sex || prev.sex,
+          birthdate: data.birthdate || prev.birthdate,
+          weight: data.weight?.toString() || prev.weight,
+          height: data.height?.toString() || prev.height,
+          address: data.address || prev.address,
+        }));
+        toast({
+          title: 'Success',
+          description: 'License information extracted successfully',
+        });
+      }
+    } catch (error) {
+      console.error('Error extracting license info:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to extract license information',
+        variant: 'destructive',
+      });
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  const uploadLicenseImage = async (driverId: string): Promise<string | null> => {
+    if (!licenseFile) return licensePreview;
+
+    const fileExt = licenseFile.name.split('.').pop();
+    const fileName = `${driverId}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('driver-licenses')
+      .upload(fileName, licenseFile, { upsert: true });
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      throw uploadError;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('driver-licenses')
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
 
-    const driverData = {
-      full_name: formData.full_name,
-      license_no: formData.license_no || null,
-      is_active: formData.is_active,
-    };
+    try {
+      const driverData = {
+        full_name: formData.full_name,
+        license_no: formData.license_no || null,
+        is_active: formData.is_active,
+        nationality: formData.nationality || null,
+        sex: formData.sex || null,
+        birthdate: formData.birthdate || null,
+        weight: formData.weight ? parseFloat(formData.weight) : null,
+        height: formData.height ? parseFloat(formData.height) : null,
+        address: formData.address || null,
+      };
 
-    let error;
-    if (editingDriver) {
-      const result = await supabase
-        .from('drivers')
-        .update(driverData)
-        .eq('id', editingDriver.id);
-      error = result.error;
-    } else {
-      const result = await supabase.from('drivers').insert(driverData);
-      error = result.error;
-    }
+      let driverId: string;
+      let error;
 
-    setSubmitting(false);
+      if (editingDriver) {
+        driverId = editingDriver.id;
+        const result = await supabase
+          .from('drivers')
+          .update(driverData)
+          .eq('id', editingDriver.id);
+        error = result.error;
+      } else {
+        const result = await supabase.from('drivers').insert(driverData).select().single();
+        error = result.error;
+        driverId = result.data?.id;
+      }
 
-    if (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } else {
+      if (error) throw error;
+
+      // Upload license image if there's a new file
+      if (licenseFile && driverId) {
+        const imageUrl = await uploadLicenseImage(driverId);
+        if (imageUrl) {
+          await supabase
+            .from('drivers')
+            .update({ license_image_url: imageUrl })
+            .eq('id', driverId);
+        }
+      }
+
       toast({
         title: editingDriver ? 'Updated' : 'Created',
         description: `Driver ${editingDriver ? 'updated' : 'added'} successfully`,
       });
       setDialogOpen(false);
       fetchDrivers();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -201,7 +345,9 @@ export default function Drivers() {
                 <TableRow>
                   <TableHead>Full Name</TableHead>
                   <TableHead>License No.</TableHead>
+                  <TableHead>Nationality</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>License</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -210,11 +356,25 @@ export default function Drivers() {
                   <TableRow key={driver.id}>
                     <TableCell className="font-medium">{driver.full_name}</TableCell>
                     <TableCell>{driver.license_no || '-'}</TableCell>
+                    <TableCell>{driver.nationality || '-'}</TableCell>
                     <TableCell>
                       {driver.is_active ? (
                         <Badge className="bg-success text-success-foreground">Active</Badge>
                       ) : (
                         <Badge variant="secondary">Inactive</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {driver.license_image_url ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setViewingLicense(driver.license_image_url)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        '-'
                       )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -245,61 +405,199 @@ export default function Drivers() {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>{editingDriver ? 'Edit Driver' : 'Add Driver'}</DialogTitle>
             <DialogDescription>
               {editingDriver
                 ? 'Update the driver information'
-                : 'Enter the details of the new driver'}
+                : 'Upload a license image to auto-fill fields or enter details manually'}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="full_name">Full Name *</Label>
-              <Input
-                id="full_name"
-                value={formData.full_name}
-                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                placeholder="Juan Dela Cruz"
-                required
+          <ScrollArea className="max-h-[60vh] pr-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* License Image Upload */}
+              <div className="space-y-2">
+                <Label>Driver's License Image</Label>
+                <div className="flex flex-col gap-3">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      Upload License
+                    </Button>
+                    {licensePreview && (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={extractLicenseInfo}
+                        disabled={extracting}
+                      >
+                        {extracting ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Extracting...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            Extract Info
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                  {licensePreview && (
+                    <div className="relative rounded-lg border overflow-hidden">
+                      <img
+                        src={licensePreview}
+                        alt="License preview"
+                        className="w-full h-48 object-contain bg-muted"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 space-y-2">
+                  <Label htmlFor="full_name">Full Name *</Label>
+                  <Input
+                    id="full_name"
+                    value={formData.full_name}
+                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                    placeholder="Juan Dela Cruz"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="license_no">License Number</Label>
+                  <Input
+                    id="license_no"
+                    value={formData.license_no}
+                    onChange={(e) => setFormData({ ...formData, license_no: e.target.value })}
+                    placeholder="N01-23-456789"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nationality">Nationality</Label>
+                  <Input
+                    id="nationality"
+                    value={formData.nationality}
+                    onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
+                    placeholder="Filipino"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="sex">Sex</Label>
+                  <Select
+                    value={formData.sex}
+                    onValueChange={(value) => setFormData({ ...formData, sex: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select sex" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="M">Male</SelectItem>
+                      <SelectItem value="F">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="birthdate">Birth Date</Label>
+                  <Input
+                    id="birthdate"
+                    type="date"
+                    value={formData.birthdate}
+                    onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="weight">Weight (kg)</Label>
+                  <Input
+                    id="weight"
+                    type="number"
+                    value={formData.weight}
+                    onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                    placeholder="70"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="height">Height (cm)</Label>
+                  <Input
+                    id="height"
+                    type="number"
+                    value={formData.height}
+                    onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+                    placeholder="170"
+                  />
+                </div>
+                <div className="col-span-2 space-y-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Textarea
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    placeholder="123 Main Street, City, Province"
+                    rows={2}
+                  />
+                </div>
+                <div className="col-span-2 flex items-center justify-between">
+                  <Label htmlFor="is_active">Active Status</Label>
+                  <Switch
+                    id="is_active"
+                    checked={formData.is_active}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : editingDriver ? (
+                    'Update'
+                  ) : (
+                    'Add Driver'
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* View License Dialog */}
+      <Dialog open={!!viewingLicense} onOpenChange={() => setViewingLicense(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Driver's License</DialogTitle>
+          </DialogHeader>
+          {viewingLicense && (
+            <div className="rounded-lg overflow-hidden">
+              <img
+                src={viewingLicense}
+                alt="Driver's license"
+                className="w-full object-contain"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="license_no">License Number</Label>
-              <Input
-                id="license_no"
-                value={formData.license_no}
-                onChange={(e) => setFormData({ ...formData, license_no: e.target.value })}
-                placeholder="N01-23-456789"
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="is_active">Active Status</Label>
-              <Switch
-                id="is_active"
-                checked={formData.is_active}
-                onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-              />
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : editingDriver ? (
-                  'Update'
-                ) : (
-                  'Add Driver'
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
+          )}
         </DialogContent>
       </Dialog>
 
