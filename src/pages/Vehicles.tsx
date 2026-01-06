@@ -32,7 +32,14 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Car, Pencil, Trash2, Loader2, Upload, Image, X } from 'lucide-react';
+import { Plus, Car, Pencil, Trash2, Loader2, Upload, Image, X, Search } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 
@@ -110,8 +117,33 @@ export default function Vehicles() {
   const [registrationPreview, setRegistrationPreview] = useState<string | null>(null);
   const [extracting, setExtracting] = useState(false);
   const [viewImageUrl, setViewImageUrl] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterMakeBrand, setFilterMakeBrand] = useState<string>('all');
+  const [filterVehicleType, setFilterVehicleType] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Get unique values for filters
+  const uniqueMakeBrands = [...new Set(vehicles.map(v => v.make_brand).filter(Boolean))] as string[];
+  const uniqueVehicleTypes = [...new Set(vehicles.map(v => v.vehicle_type).filter(Boolean))] as string[];
+
+  // Filter vehicles
+  const filteredVehicles = vehicles.filter(vehicle => {
+    const matchesSearch = searchQuery === '' || 
+      vehicle.plate_no.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      vehicle.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      vehicle.make_brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      vehicle.owner_name?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesMakeBrand = filterMakeBrand === 'all' || vehicle.make_brand === filterMakeBrand;
+    const matchesVehicleType = filterVehicleType === 'all' || vehicle.vehicle_type === filterVehicleType;
+    const matchesStatus = filterStatus === 'all' || 
+      (filterStatus === 'active' && vehicle.is_active) ||
+      (filterStatus === 'inactive' && !vehicle.is_active);
+
+    return matchesSearch && matchesMakeBrand && matchesVehicleType && matchesStatus;
+  });
 
   useEffect(() => {
     fetchVehicles();
@@ -431,7 +463,54 @@ export default function Vehicles() {
           <CardTitle>Vehicle List</CardTitle>
           <CardDescription>All registered vehicles in the system</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Search and Filters */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search by plate, description, make, or owner..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Select value={filterMakeBrand} onValueChange={setFilterMakeBrand}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="Make/Brand" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Makes</SelectItem>
+                  {uniqueMakeBrands.map((brand) => (
+                    <SelectItem key={brand} value={brand}>{brand}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={filterVehicleType} onValueChange={setFilterVehicleType}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="Vehicle Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {uniqueVehicleTypes.map((type) => (
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="w-[130px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           {vehicles.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Car className="h-12 w-12 text-muted-foreground/50" />
@@ -441,6 +520,12 @@ export default function Vehicles() {
                 <Plus className="mr-2 h-4 w-4" />
                 Add Vehicle
               </Button>
+            </div>
+          ) : filteredVehicles.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Search className="h-12 w-12 text-muted-foreground/50" />
+              <h3 className="mt-4 text-lg font-medium">No vehicles match your filters</h3>
+              <p className="text-muted-foreground">Try adjusting your search or filter criteria.</p>
             </div>
           ) : (
             <Table>
@@ -457,7 +542,7 @@ export default function Vehicles() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {vehicles.map((vehicle) => (
+                {filteredVehicles.map((vehicle) => (
                   <TableRow key={vehicle.id}>
                     <TableCell className="font-medium">{vehicle.plate_no}</TableCell>
                     <TableCell>{vehicle.description || '-'}</TableCell>
