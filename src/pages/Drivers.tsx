@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,7 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Users, Pencil, Trash2, Loader2, Upload, Image, Eye, Sparkles, Search, X } from 'lucide-react';
+import { Plus, Users, Pencil, Trash2, Loader2, Upload, Image, Eye, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
@@ -82,52 +82,6 @@ export default function Drivers() {
   const [viewingLicense, setViewingLicense] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-
-  // Search and filter state
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterNationality, setFilterNationality] = useState<string>("all");
-  const [filterStatus, setFilterStatus] = useState<string>("all");
-
-  // Derived unique values for filters
-  const uniqueNationalities = useMemo(() => {
-    const nationalities = drivers
-      .map((d) => d.nationality)
-      .filter((n): n is string => n !== null && n !== "");
-    return [...new Set(nationalities)].sort();
-  }, [drivers]);
-
-  // Filtered drivers
-  const filteredDrivers = useMemo(() => {
-    return drivers.filter((driver) => {
-      // Search filter
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch =
-        searchQuery === "" ||
-        driver.full_name.toLowerCase().includes(searchLower) ||
-        (driver.license_no && driver.license_no.toLowerCase().includes(searchLower)) ||
-        (driver.address && driver.address.toLowerCase().includes(searchLower));
-
-      // Nationality filter
-      const matchesNationality =
-        filterNationality === "all" || driver.nationality === filterNationality;
-
-      // Status filter
-      const matchesStatus =
-        filterStatus === "all" ||
-        (filterStatus === "active" && driver.is_active === true) ||
-        (filterStatus === "inactive" && driver.is_active === false);
-
-      return matchesSearch && matchesNationality && matchesStatus;
-    });
-  }, [drivers, searchQuery, filterNationality, filterStatus]);
-
-  const clearFilters = () => {
-    setSearchQuery("");
-    setFilterNationality("all");
-    setFilterStatus("all");
-  };
-
-  const hasActiveFilters = searchQuery !== "" || filterNationality !== "all" || filterStatus !== "all";
 
   useEffect(() => {
     fetchDrivers();
@@ -369,79 +323,21 @@ export default function Drivers() {
         </Button>
       </div>
 
-      {/* Search and Filters */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-end">
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search by name, license no, or address..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Select value={filterNationality} onValueChange={setFilterNationality}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Nationality" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Nationalities</SelectItem>
-              {uniqueNationalities.map((nationality) => (
-                <SelectItem key={nationality} value={nationality}>
-                  {nationality}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
-          {hasActiveFilters && (
-            <Button variant="ghost" size="icon" onClick={clearFilters}>
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Results count */}
-      {hasActiveFilters && (
-        <p className="text-sm text-muted-foreground">
-          Showing {filteredDrivers.length} of {drivers.length} drivers
-        </p>
-      )}
-
       <Card>
         <CardHeader>
           <CardTitle>Driver List</CardTitle>
           <CardDescription>All registered drivers in the system</CardDescription>
         </CardHeader>
         <CardContent>
-          {filteredDrivers.length === 0 ? (
+          {drivers.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Users className="h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mt-4 text-lg font-medium">
-                {hasActiveFilters ? "No drivers match the current filters" : "No drivers found"}
-              </h3>
-              <p className="text-muted-foreground">
-                {hasActiveFilters ? "Try adjusting your search or filters" : "Add your first driver to get started."}
-              </p>
-              {!hasActiveFilters && (
-                <Button className="mt-4" onClick={() => handleOpenDialog()}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Driver
-                </Button>
-              )}
+              <h3 className="mt-4 text-lg font-medium">No drivers found</h3>
+              <p className="text-muted-foreground">Add your first driver to get started.</p>
+              <Button className="mt-4" onClick={() => handleOpenDialog()}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Driver
+              </Button>
             </div>
           ) : (
             <Table>
@@ -456,7 +352,7 @@ export default function Drivers() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredDrivers.map((driver) => (
+                {drivers.map((driver) => (
                   <TableRow key={driver.id}>
                     <TableCell className="font-medium">{driver.full_name}</TableCell>
                     <TableCell>{driver.license_no || '-'}</TableCell>
