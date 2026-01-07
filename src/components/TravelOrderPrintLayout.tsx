@@ -147,8 +147,8 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
           <p className="font-bold text-[10px]">Appropriation/Fund to which travel expenses would be charged to:</p>
           <div className="flex gap-6 mt-1 text-[11px]">
             <span>({order.expense_type === 'general_fund' ? 'X' : ' '}) General Fund</span>
-            <span>( ) Project Funds</span>
-            <span>( ) Others: (e.g. sponsor/</span>
+            <span>({order.expense_type === 'project_funds' ? 'X' : ' '}) Project Funds</span>
+            <span>({order.expense_type === 'others' ? 'X' : ' '}) Others: (e.g. sponsor/</span>
           </div>
           <p className="text-[10px] ml-72">requesting agency)</p>
         </div>
