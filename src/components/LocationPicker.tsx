@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,19 +8,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { MapPin } from 'lucide-react';
+import { MapPin, Loader2 } from 'lucide-react';
 
-// Fix Leaflet default marker icon issue with CDN URLs
-const DefaultIcon = L.icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-L.Marker.prototype.options.icon = DefaultIcon;
+// Lazy load the map component to avoid SSR/hydration issues
+const MapComponent = lazy(() => import('./MapComponent'));
 
 interface LocationPickerProps {
   open: boolean;
@@ -31,28 +20,12 @@ interface LocationPickerProps {
   initialLocation?: { lat: number; lng: number } | null;
 }
 
-interface MapClickHandlerProps {
-  onLocationSelect: (lat: number, lng: number) => void;
-}
-
-function MapClickHandler({ onLocationSelect }: MapClickHandlerProps) {
-  useMapEvents({
-    click(e) {
-      onLocationSelect(e.latlng.lat, e.latlng.lng);
-    },
-  });
-  return null;
-}
-
 export default function LocationPicker({
   open,
   onOpenChange,
   onLocationSelect,
   initialLocation,
 }: LocationPickerProps) {
-  // Default to CAR region (Baguio City area)
-  const defaultCenter: [number, number] = [16.4023, 120.596];
-  
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(
     initialLocation || null
   );
@@ -79,7 +52,6 @@ export default function LocationPicker({
     onOpenChange(false);
   };
 
-  // Only render dialog content when open to avoid react-leaflet initialization issues
   if (!open) {
     return null;
   }
@@ -98,18 +70,18 @@ export default function LocationPicker({
         </DialogHeader>
 
         <div className="h-[400px] w-full rounded-md overflow-hidden border">
-          <MapContainer
-            center={position ? [position.lat, position.lng] : defaultCenter}
-            zoom={13}
-            className="h-full w-full"
+          <Suspense
+            fallback={
+              <div className="h-full w-full flex items-center justify-center bg-muted">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            }
           >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            <MapComponent
+              position={position}
+              onLocationSelect={handleMapClick}
             />
-            <MapClickHandler onLocationSelect={handleMapClick} />
-            {position && <Marker position={[position.lat, position.lng]} />}
-          </MapContainer>
+          </Suspense>
         </div>
 
         {position && (
