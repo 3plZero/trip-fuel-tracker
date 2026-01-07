@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Car, Pencil, Trash2, Loader2, Upload, Image, X, Search } from 'lucide-react';
+import { Plus, Car, Pencil, Trash2, Loader2, Upload, Image, X, Search, MapPin } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -74,6 +74,10 @@ interface Vehicle {
   cr_no: string | null;
   remarks: string | null;
   registration_image_url: string | null;
+  last_location_lat: number | null;
+  last_location_lng: number | null;
+  last_location_updated_at: string | null;
+  last_location_name: string | null;
 }
 
 export default function Vehicles() {
@@ -536,6 +540,7 @@ export default function Vehicles() {
                   <TableHead>Type</TableHead>
                   <TableHead>Make/Brand</TableHead>
                   <TableHead>Color</TableHead>
+                  <TableHead>Location</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>CR</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -549,6 +554,21 @@ export default function Vehicles() {
                     <TableCell>{vehicle.vehicle_type || '-'}</TableCell>
                     <TableCell>{vehicle.make_brand || '-'}</TableCell>
                     <TableCell>{vehicle.color || '-'}</TableCell>
+                    <TableCell>
+                      {vehicle.last_location_lat && vehicle.last_location_lng ? (
+                        <a
+                          href={`https://www.openstreetmap.org/?mlat=${vehicle.last_location_lat}&mlon=${vehicle.last_location_lng}#map=15/${vehicle.last_location_lat}/${vehicle.last_location_lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-primary hover:underline"
+                        >
+                          <MapPin className="h-4 w-4" />
+                          <span className="text-xs">View</span>
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">-</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       {vehicle.is_active ? (
                         <Badge className="bg-success text-success-foreground">Active</Badge>
