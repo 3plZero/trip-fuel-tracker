@@ -132,9 +132,33 @@
   body {
     background: white !important;
     color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .print-page {
     page-break-after: always;
+  }
+
+  .print-layout {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.5in !important;
+    font-size: 11px !important;
+  }
+
+  .print-layout table {
+    border-collapse: collapse !important;
+  }
+
+  .print-layout td,
+  .print-layout th {
+    border: 1px solid black !important;
+  }
+
+  @page {
+    size: letter;
+    margin: 0.25in;
   }
 }
