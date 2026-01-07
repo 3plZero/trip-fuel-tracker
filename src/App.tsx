@@ -10,6 +10,9 @@ import Dashboard from "@/pages/Dashboard";
 import TripTickets from "@/pages/TripTickets";
 import TripTicketForm from "@/pages/TripTicketForm";
 import TripTicketView from "@/pages/TripTicketView";
+import TravelOrders from "@/pages/TravelOrders";
+import TravelOrderForm from "@/pages/TravelOrderForm";
+import TravelOrderView from "@/pages/TravelOrderView";
 import Vehicles from "@/pages/Vehicles";
 import Drivers from "@/pages/Drivers";
 import Reports from "@/pages/Reports";
@@ -41,10 +44,17 @@ function AppRoutes() {
     <Routes>
       <Route path="/auth" element={<Auth />} />
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      {/* Fuel Report System Routes */}
       <Route path="/trip-tickets" element={<ProtectedRoute><TripTickets /></ProtectedRoute>} />
       <Route path="/trip-tickets/new" element={<ProtectedRoute><TripTicketForm /></ProtectedRoute>} />
       <Route path="/trip-tickets/:id" element={<ProtectedRoute><TripTicketView /></ProtectedRoute>} />
       <Route path="/trip-tickets/:id/edit" element={<ProtectedRoute><TripTicketForm /></ProtectedRoute>} />
+      {/* Travel Order System Routes */}
+      <Route path="/travel-orders" element={<ProtectedRoute><TravelOrders /></ProtectedRoute>} />
+      <Route path="/travel-orders/new" element={<ProtectedRoute><TravelOrderForm /></ProtectedRoute>} />
+      <Route path="/travel-orders/:id" element={<ProtectedRoute><TravelOrderView /></ProtectedRoute>} />
+      <Route path="/travel-orders/:id/edit" element={<ProtectedRoute><TravelOrderForm /></ProtectedRoute>} />
+      {/* Shared Routes */}
       <Route path="/vehicles" element={<ProtectedRoute><Vehicles /></ProtectedRoute>} />
       <Route path="/drivers" element={<ProtectedRoute><Drivers /></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
