@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -17,18 +18,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Loader2, Printer, FileText } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
-
-interface Vehicle {
-  id: string;
-  plate_no: string;
-  description: string | null;
-}
+import { Loader2, Printer, FileText, Search, Eye } from 'lucide-react';
+import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 interface FuelReportRow {
+  id: string;
   tr_no: string;
   ticket_date: string;
+  plate_no: string;
+  vehicle_description: string | null;
+  driver_name: string | null;
   balance_tank_start: number;
   purchased_outside: number;
   issued_from_stock: number;
@@ -43,82 +43,67 @@ interface FuelReportRow {
   grease_used: number;
 }
 
+interface Vehicle {
+  id: string;
+  plate_no: string;
+}
+
+interface Driver {
+  id: string;
+  full_name: string;
+}
+
 export default function Reports() {
   const [loading, setLoading] = useState(true);
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [selectedVehicle, setSelectedVehicle] = useState<string>('');
-  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
   const [reportData, setReportData] = useState<FuelReportRow[]>([]);
-  const [vehicleInfo, setVehicleInfo] = useState<Vehicle | null>(null);
-  const printRef = useRef<HTMLDivElement>(null);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  
+  // Filters
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterVehicle, setFilterVehicle] = useState('all');
+  const [filterDriver, setFilterDriver] = useState('all');
 
   useEffect(() => {
-    fetchVehicles();
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    if (selectedVehicle && selectedMonth) {
-      fetchReportData();
-    }
-  }, [selectedVehicle, selectedMonth]);
-
-  const fetchVehicles = async () => {
-    const { data, error } = await supabase
-      .from('vehicles')
-      .select('id, plate_no, description')
-      .eq('is_active', true)
-      .order('plate_no');
-
-    if (!error && data) {
-      setVehicles(data);
-      if (data.length > 0) {
-        setSelectedVehicle(data[0].id);
-        setVehicleInfo(data[0]);
-      }
-    }
-    setLoading(false);
-  };
-
-  const fetchReportData = async () => {
+  const fetchData = async () => {
     setLoading(true);
 
-    const [year, month] = selectedMonth.split('-').map(Number);
-    const startDate = startOfMonth(new Date(year, month - 1));
-    const endDate = endOfMonth(new Date(year, month - 1));
+    const [ticketsRes, vehiclesRes, driversRes] = await Promise.all([
+      supabase
+        .from('trip_tickets')
+        .select(`
+          id,
+          tr_no,
+          ticket_date,
+          balance_tank_start,
+          purchased_outside,
+          issued_from_stock,
+          gasoline_used,
+          balance_tank_end,
+          total_distance,
+          motor_oil_used,
+          grease_used,
+          vehicles (plate_no, description),
+          drivers (full_name),
+          trip_details (
+            odometer_initial,
+            odometer_end
+          )
+        `)
+        .eq('status', 'completed')
+        .order('ticket_date', { ascending: false }),
+      supabase.from('vehicles').select('id, plate_no').eq('is_active', true).order('plate_no'),
+      supabase.from('drivers').select('id, full_name').eq('is_active', true).order('full_name'),
+    ]);
 
-    // Get vehicle info
-    const vehicle = vehicles.find((v) => v.id === selectedVehicle);
-    setVehicleInfo(vehicle || null);
+    if (vehiclesRes.data) setVehicles(vehiclesRes.data);
+    if (driversRes.data) setDrivers(driversRes.data);
 
-    // Fetch trip tickets with trip details for odometer readings
-    const { data: tickets, error } = await supabase
-      .from('trip_tickets')
-      .select(`
-        tr_no,
-        ticket_date,
-        balance_tank_start,
-        purchased_outside,
-        issued_from_stock,
-        gasoline_used,
-        balance_tank_end,
-        total_distance,
-        motor_oil_used,
-        grease_used,
-        trip_details (
-          odometer_initial,
-          odometer_end
-        )
-      `)
-      .eq('vehicle_id', selectedVehicle)
-      .gte('ticket_date', format(startDate, 'yyyy-MM-dd'))
-      .lte('ticket_date', format(endDate, 'yyyy-MM-dd'))
-      .order('ticket_date');
-
-    if (error) {
-      console.error('Error fetching report data:', error);
-      setReportData([]);
-    } else {
-      const formattedData: FuelReportRow[] = (tickets || []).map((t) => {
+    if (!ticketsRes.error && ticketsRes.data) {
+      const formattedData: FuelReportRow[] = ticketsRes.data.map((t) => {
         const tripDetails = t.trip_details || [];
         const odometerStart = tripDetails.length > 0 ? tripDetails[0].odometer_initial : null;
         const odometerEnd = tripDetails.length > 0 ? tripDetails[tripDetails.length - 1].odometer_end : null;
@@ -127,8 +112,12 @@ export default function Reports() {
         const distancePerLiter = t.gasoline_used > 0 ? (t.total_distance || 0) / t.gasoline_used : 0;
 
         return {
+          id: t.id,
           tr_no: t.tr_no,
           ticket_date: t.ticket_date,
+          plate_no: t.vehicles?.plate_no || '-',
+          vehicle_description: t.vehicles?.description || null,
+          driver_name: t.drivers?.full_name || null,
           balance_tank_start: t.balance_tank_start || 0,
           purchased_outside: t.purchased_outside || 0,
           issued_from_stock: t.issued_from_stock || 0,
@@ -152,18 +141,22 @@ export default function Reports() {
     window.print();
   };
 
-  // Generate month options for the last 12 months
-  const monthOptions = [];
-  for (let i = 0; i < 12; i++) {
-    const date = subMonths(new Date(), i);
-    monthOptions.push({
-      value: format(date, 'yyyy-MM'),
-      label: format(date, 'MMMM yyyy'),
-    });
-  }
+  // Filter data
+  const filteredData = reportData.filter((row) => {
+    const matchesSearch =
+      searchQuery === '' ||
+      row.tr_no.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row.plate_no.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (row.driver_name && row.driver_name.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesVehicle = filterVehicle === 'all' || row.plate_no === filterVehicle;
+    const matchesDriver = filterDriver === 'all' || row.driver_name === filterDriver;
+    
+    return matchesSearch && matchesVehicle && matchesDriver;
+  });
 
   // Calculate totals
-  const totals = reportData.reduce(
+  const totals = filteredData.reduce(
     (acc, row) => ({
       purchased: acc.purchased + row.purchased_outside + row.issued_from_stock,
       consumed: acc.consumed + row.gasoline_used,
@@ -174,7 +167,7 @@ export default function Reports() {
     { purchased: 0, consumed: 0, distance: 0, oil: 0, grease: 0 }
   );
 
-  if (loading && vehicles.length === 0) {
+  if (loading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -188,177 +181,172 @@ export default function Reports() {
       <div className="no-print flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Fuel Consumption Report</h1>
-          <p className="text-muted-foreground">Monthly fuel consumption analysis by vehicle</p>
+          <p className="text-muted-foreground">All completed trip tickets with fuel consumption data</p>
         </div>
-        <div className="flex gap-3">
-          <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select vehicle" />
-            </SelectTrigger>
-            <SelectContent>
-              {vehicles.map((v) => (
-                <SelectItem key={v.id} value={v.id}>
-                  {v.plate_no}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {monthOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button variant="outline" onClick={handlePrint}>
-            <Printer className="mr-2 h-4 w-4" />
-            Print
-          </Button>
-        </div>
+        <Button variant="outline" onClick={handlePrint}>
+          <Printer className="mr-2 h-4 w-4" />
+          Print
+        </Button>
       </div>
 
-      {/* Report Content */}
-      <div ref={printRef}>
-        {/* Print Header */}
-        <div className="print-only hidden text-center mb-6">
-          <h1 className="text-lg font-bold">Department of Science and Technology</h1>
-          <h2 className="text-base">Cordillera Administrative Region</h2>
-          <h3 className="text-lg font-bold mt-4">FUEL CONSUMPTION REPORT</h3>
-          <p className="mt-2">
-            Vehicle: {vehicleInfo?.plate_no} {vehicleInfo?.description && `(${vehicleInfo.description})`}
-          </p>
-          <p>
-            Month: {selectedMonth && format(new Date(selectedMonth + '-01'), 'MMMM yyyy')}
-          </p>
+      {/* Filters */}
+      <div className="no-print flex flex-col gap-4 sm:flex-row">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search by TR No., vehicle, or driver..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
         </div>
+        <Select value={filterVehicle} onValueChange={setFilterVehicle}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Vehicles" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Vehicles</SelectItem>
+            {vehicles.map((v) => (
+              <SelectItem key={v.id} value={v.plate_no}>
+                {v.plate_no}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={filterDriver} onValueChange={setFilterDriver}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Drivers" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Drivers</SelectItem>
+            {drivers.map((d) => (
+              <SelectItem key={d.id} value={d.full_name}>
+                {d.full_name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-        <Card>
-          <CardHeader className="no-print">
-            <CardTitle>
-              {vehicleInfo?.plate_no} {vehicleInfo?.description && `- ${vehicleInfo.description}`}
-            </CardTitle>
-            <CardDescription>
-              Report for {selectedMonth && format(new Date(selectedMonth + '-01'), 'MMMM yyyy')}
-            </CardDescription>
+      {/* Print Header */}
+      <div className="print-only hidden text-center mb-6">
+        <h1 className="text-lg font-bold">Department of Science and Technology</h1>
+        <h2 className="text-base">Cordillera Administrative Region</h2>
+        <h3 className="text-lg font-bold mt-4">FUEL CONSUMPTION REPORT</h3>
+        <p className="mt-2">All Completed Trip Tickets</p>
+      </div>
+
+      {/* Report Table */}
+      <Card>
+        <CardHeader className="no-print">
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Trip Tickets ({filteredData.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {filteredData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <FileText className="h-12 w-12 text-muted-foreground/50" />
+              <h3 className="mt-4 text-lg font-medium">No data found</h3>
+              <p className="text-muted-foreground">
+                No completed trip tickets match your search criteria.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>TR No.</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Vehicle</TableHead>
+                    <TableHead>Driver</TableHead>
+                    <TableHead className="text-right">Fuel In (L)</TableHead>
+                    <TableHead className="text-right">Consumed (L)</TableHead>
+                    <TableHead className="text-right">Distance (km)</TableHead>
+                    <TableHead className="text-right">Km/L</TableHead>
+                    <TableHead className="text-right">Oil (L)</TableHead>
+                    <TableHead className="text-right">Grease (L)</TableHead>
+                    <TableHead className="no-print w-[50px]"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredData.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell className="font-medium">{row.tr_no}</TableCell>
+                      <TableCell>{format(new Date(row.ticket_date), 'MMM dd, yyyy')}</TableCell>
+                      <TableCell>{row.plate_no}</TableCell>
+                      <TableCell>{row.driver_name || '-'}</TableCell>
+                      <TableCell className="text-right">{row.total_fuel_in_tank.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{row.gasoline_used.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{row.total_distance.toFixed(0)}</TableCell>
+                      <TableCell className="text-right">{row.distance_per_liter.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{row.motor_oil_used.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{row.grease_used.toFixed(2)}</TableCell>
+                      <TableCell className="no-print">
+                        <Button variant="ghost" size="icon" asChild>
+                          <Link to={`/trip-tickets/${row.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {/* Totals Row */}
+                  <TableRow className="bg-muted/50 font-bold">
+                    <TableCell colSpan={4}>TOTAL</TableCell>
+                    <TableCell className="text-right">{totals.purchased.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">{totals.consumed.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">{totals.distance.toFixed(0)}</TableCell>
+                    <TableCell className="text-right">
+                      {totals.consumed > 0 ? (totals.distance / totals.consumed).toFixed(2) : '0.00'}
+                    </TableCell>
+                    <TableCell className="text-right">{totals.oil.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">{totals.grease.toFixed(2)}</TableCell>
+                    <TableCell className="no-print"></TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Summary Section */}
+      {filteredData.length > 0 && (
+        <Card className="no-print">
+          <CardHeader>
+            <CardTitle>Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            {reportData.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <FileText className="h-12 w-12 text-muted-foreground/50" />
-                <h3 className="mt-4 text-lg font-medium">No data found</h3>
-                <p className="text-muted-foreground">
-                  No trip tickets found for this vehicle in the selected month.
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+              <div className="rounded-lg bg-muted p-4">
+                <p className="text-sm text-muted-foreground">Total Trips</p>
+                <p className="text-2xl font-bold">{filteredData.length}</p>
+              </div>
+              <div className="rounded-lg bg-muted p-4">
+                <p className="text-sm text-muted-foreground">Fuel Purchased</p>
+                <p className="text-2xl font-bold">{totals.purchased.toFixed(2)} L</p>
+              </div>
+              <div className="rounded-lg bg-muted p-4">
+                <p className="text-sm text-muted-foreground">Fuel Consumed</p>
+                <p className="text-2xl font-bold">{totals.consumed.toFixed(2)} L</p>
+              </div>
+              <div className="rounded-lg bg-muted p-4">
+                <p className="text-sm text-muted-foreground">Total Distance</p>
+                <p className="text-2xl font-bold">{totals.distance.toFixed(0)} km</p>
+              </div>
+              <div className="rounded-lg bg-muted p-4">
+                <p className="text-sm text-muted-foreground">Avg. Consumption</p>
+                <p className="text-2xl font-bold">
+                  {totals.consumed > 0 ? (totals.distance / totals.consumed).toFixed(2) : '0.00'} km/L
                 </p>
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead rowSpan={2}>Trip Ticket No.</TableHead>
-                      <TableHead rowSpan={2}>Date</TableHead>
-                      <TableHead rowSpan={2}>Beginning Balance (L)</TableHead>
-                      <TableHead colSpan={2} className="text-center border-x">
-                        Purchase in Tank
-                      </TableHead>
-                      <TableHead rowSpan={2}>Total Fuel (L)</TableHead>
-                      <TableHead rowSpan={2}>Consumed (L)</TableHead>
-                      <TableHead rowSpan={2}>Ending Balance (L)</TableHead>
-                      <TableHead rowSpan={2}>Km/L</TableHead>
-                      <TableHead colSpan={2} className="text-center border-x">
-                        Odometer
-                      </TableHead>
-                      <TableHead rowSpan={2}>Distance (km)</TableHead>
-                      <TableHead rowSpan={2}>Oil (L)</TableHead>
-                      <TableHead rowSpan={2}>Grease (L)</TableHead>
-                    </TableRow>
-                    <TableRow>
-                      <TableHead className="border-l">Stock (L)</TableHead>
-                      <TableHead className="border-r">Outside (L)</TableHead>
-                      <TableHead className="border-l">Begin</TableHead>
-                      <TableHead className="border-r">End</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {reportData.map((row) => (
-                      <TableRow key={row.tr_no}>
-                        <TableCell className="font-medium">{row.tr_no}</TableCell>
-                        <TableCell>{format(new Date(row.ticket_date), 'MM/dd')}</TableCell>
-                        <TableCell>{row.balance_tank_start.toFixed(2)}</TableCell>
-                        <TableCell className="border-l">{row.issued_from_stock.toFixed(2)}</TableCell>
-                        <TableCell className="border-r">{row.purchased_outside.toFixed(2)}</TableCell>
-                        <TableCell>{row.total_fuel_in_tank.toFixed(2)}</TableCell>
-                        <TableCell>{row.gasoline_used.toFixed(2)}</TableCell>
-                        <TableCell>{row.balance_tank_end.toFixed(2)}</TableCell>
-                        <TableCell>{row.distance_per_liter.toFixed(2)}</TableCell>
-                        <TableCell className="border-l">{row.odometer_start ?? '-'}</TableCell>
-                        <TableCell className="border-r">{row.odometer_end ?? '-'}</TableCell>
-                        <TableCell>{row.total_distance.toFixed(0)}</TableCell>
-                        <TableCell>{row.motor_oil_used.toFixed(2)}</TableCell>
-                        <TableCell>{row.grease_used.toFixed(2)}</TableCell>
-                      </TableRow>
-                    ))}
-                    {/* Totals Row */}
-                    <TableRow className="bg-muted/50 font-bold">
-                      <TableCell colSpan={3}>TOTAL</TableCell>
-                      <TableCell className="border-l" colSpan={2}>
-                        {totals.purchased.toFixed(2)} L
-                      </TableCell>
-                      <TableCell colSpan={2}></TableCell>
-                      <TableCell>{totals.consumed.toFixed(2)}</TableCell>
-                      <TableCell></TableCell>
-                      <TableCell className="border-l" colSpan={2}></TableCell>
-                      <TableCell>{totals.distance.toFixed(0)}</TableCell>
-                      <TableCell>{totals.oil.toFixed(2)}</TableCell>
-                      <TableCell>{totals.grease.toFixed(2)}</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
-            )}
+            </div>
           </CardContent>
         </Card>
-
-        {/* Summary Section */}
-        {reportData.length > 0 && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Monthly Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                <div className="rounded-lg bg-muted p-4">
-                  <p className="text-sm text-muted-foreground">Total Trips</p>
-                  <p className="text-2xl font-bold">{reportData.length}</p>
-                </div>
-                <div className="rounded-lg bg-muted p-4">
-                  <p className="text-sm text-muted-foreground">Fuel Purchased</p>
-                  <p className="text-2xl font-bold">{totals.purchased.toFixed(2)} L</p>
-                </div>
-                <div className="rounded-lg bg-muted p-4">
-                  <p className="text-sm text-muted-foreground">Fuel Consumed</p>
-                  <p className="text-2xl font-bold">{totals.consumed.toFixed(2)} L</p>
-                </div>
-                <div className="rounded-lg bg-muted p-4">
-                  <p className="text-sm text-muted-foreground">Total Distance</p>
-                  <p className="text-2xl font-bold">{totals.distance.toFixed(0)} km</p>
-                </div>
-                <div className="rounded-lg bg-muted p-4">
-                  <p className="text-sm text-muted-foreground">Avg. Consumption</p>
-                  <p className="text-2xl font-bold">
-                    {totals.consumed > 0 ? (totals.distance / totals.consumed).toFixed(2) : '0.00'} km/L
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      )}
     </div>
   );
 }
