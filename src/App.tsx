@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import AppLayout from "@/components/layout/AppLayout";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
+import TravelOrderDashboard from "@/pages/TravelOrderDashboard";
 import TripTickets from "@/pages/TripTickets";
 import TripTicketForm from "@/pages/TripTicketForm";
 import TripTicketView from "@/pages/TripTicketView";
@@ -50,6 +51,7 @@ function AppRoutes() {
       <Route path="/trip-tickets/:id" element={<ProtectedRoute><TripTicketView /></ProtectedRoute>} />
       <Route path="/trip-tickets/:id/edit" element={<ProtectedRoute><TripTicketForm /></ProtectedRoute>} />
       {/* Travel Order System Routes */}
+      <Route path="/travel-order-dashboard" element={<ProtectedRoute><TravelOrderDashboard /></ProtectedRoute>} />
       <Route path="/travel-orders" element={<ProtectedRoute><TravelOrders /></ProtectedRoute>} />
       <Route path="/travel-orders/new" element={<ProtectedRoute><TravelOrderForm /></ProtectedRoute>} />
       <Route path="/travel-orders/:id" element={<ProtectedRoute><TravelOrderView /></ProtectedRoute>} />

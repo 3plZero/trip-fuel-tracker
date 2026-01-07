@@ -38,9 +38,8 @@ const fuelReportNavigation = [
 ];
 
 const travelOrderNavigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/travel-order-dashboard', icon: LayoutDashboard },
   { name: 'Travel Orders', href: '/travel-orders', icon: Plane },
-  { name: 'Reports', href: '/reports', icon: BarChart3 },
 ];
 
 const systemLabels = {
