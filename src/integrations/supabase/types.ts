@@ -14,6 +14,127 @@ export type Database = {
   }
   public: {
     Tables: {
+      building_maintenance_checklists: {
+        Row: {
+          building_id: string | null
+          checklist_month: string
+          checklist_year: number
+          created_at: string | null
+          created_by: string | null
+          id: string
+          location: string | null
+          performed_by: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          building_id?: string | null
+          checklist_month: string
+          checklist_year: number
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          location?: string | null
+          performed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          building_id?: string | null
+          checklist_month?: string
+          checklist_year?: number
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          location?: string | null
+          performed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "building_maintenance_checklists_building_id_fkey"
+            columns: ["building_id"]
+            isOneToOne: false
+            referencedRelation: "buildings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      building_maintenance_checks: {
+        Row: {
+          check_category: string
+          check_item: string
+          checklist_id: string
+          id: string
+          remarks: string | null
+          week_1: boolean | null
+          week_2: boolean | null
+          week_3: boolean | null
+          week_4: boolean | null
+        }
+        Insert: {
+          check_category: string
+          check_item: string
+          checklist_id: string
+          id?: string
+          remarks?: string | null
+          week_1?: boolean | null
+          week_2?: boolean | null
+          week_3?: boolean | null
+          week_4?: boolean | null
+        }
+        Update: {
+          check_category?: string
+          check_item?: string
+          checklist_id?: string
+          id?: string
+          remarks?: string | null
+          week_1?: boolean | null
+          week_2?: boolean | null
+          week_3?: boolean | null
+          week_4?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "building_maintenance_checks_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "building_maintenance_checklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      buildings: {
+        Row: {
+          building_name: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          building_name: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          building_name?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       drivers: {
         Row: {
           address: string | null
@@ -59,6 +180,118 @@ export type Database = {
           sex?: string | null
           updated_at?: string | null
           weight?: number | null
+        }
+        Relationships: []
+      }
+      generator_maintenance_checklists: {
+        Row: {
+          checklist_month: string
+          created_at: string | null
+          created_by: string | null
+          generator_id: string | null
+          id: string
+          monitoring_notes: string | null
+          performed_by: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          checklist_month: string
+          created_at?: string | null
+          created_by?: string | null
+          generator_id?: string | null
+          id?: string
+          monitoring_notes?: string | null
+          performed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          checklist_month?: string
+          created_at?: string | null
+          created_by?: string | null
+          generator_id?: string | null
+          id?: string
+          monitoring_notes?: string | null
+          performed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generator_maintenance_checklists_generator_id_fkey"
+            columns: ["generator_id"]
+            isOneToOne: false
+            referencedRelation: "generators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generator_maintenance_checks: {
+        Row: {
+          check_item: string
+          checklist_id: string
+          id: string
+          remarks: string | null
+          week_2: boolean | null
+          week_4: boolean | null
+        }
+        Insert: {
+          check_item: string
+          checklist_id: string
+          id?: string
+          remarks?: string | null
+          week_2?: boolean | null
+          week_4?: boolean | null
+        }
+        Update: {
+          check_item?: string
+          checklist_id?: string
+          id?: string
+          remarks?: string | null
+          week_2?: boolean | null
+          week_4?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generator_maintenance_checks_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "generator_maintenance_checklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generators: {
+        Row: {
+          created_at: string | null
+          equipment_name: string
+          id: string
+          is_active: boolean | null
+          location: string | null
+          serial_no: string | null
+          type_model_no: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          equipment_name: string
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          serial_no?: string | null
+          type_model_no?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          equipment_name?: string
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          serial_no?: string | null
+          type_model_no?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -431,6 +664,97 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vehicle_maintenance_checklists: {
+        Row: {
+          checklist_month: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          location: string | null
+          performed_by: string | null
+          status: string | null
+          updated_at: string | null
+          vehicle_id: string | null
+        }
+        Insert: {
+          checklist_month: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          location?: string | null
+          performed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+          vehicle_id?: string | null
+        }
+        Update: {
+          checklist_month?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          location?: string | null
+          performed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_maintenance_checklists_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicle_maintenance_checks: {
+        Row: {
+          check_category: string
+          check_item: string
+          checklist_id: string
+          day_1: boolean | null
+          day_2: boolean | null
+          day_3: boolean | null
+          day_4: boolean | null
+          day_5: boolean | null
+          id: string
+          remarks: string | null
+        }
+        Insert: {
+          check_category: string
+          check_item: string
+          checklist_id: string
+          day_1?: boolean | null
+          day_2?: boolean | null
+          day_3?: boolean | null
+          day_4?: boolean | null
+          day_5?: boolean | null
+          id?: string
+          remarks?: string | null
+        }
+        Update: {
+          check_category?: string
+          check_item?: string
+          checklist_id?: string
+          day_1?: boolean | null
+          day_2?: boolean | null
+          day_3?: boolean | null
+          day_4?: boolean | null
+          day_5?: boolean | null
+          id?: string
+          remarks?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_maintenance_checks_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_maintenance_checklists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vehicles: {
         Row: {

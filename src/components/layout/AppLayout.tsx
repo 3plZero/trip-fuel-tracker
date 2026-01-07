@@ -19,6 +19,9 @@ import {
   Menu,
   X,
   Plane,
+  Wrench,
+  Building2,
+  Zap,
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { cn } from '@/lib/utils';
@@ -27,7 +30,7 @@ interface AppLayoutProps {
   children: ReactNode;
 }
 
-type SystemType = 'fuel-report' | 'travel-order';
+type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance';
 
 const fuelReportNavigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -42,9 +45,17 @@ const travelOrderNavigation = [
   { name: 'Travel Orders', href: '/travel-orders', icon: Plane },
 ];
 
+const preventiveMaintenanceNavigation = [
+  { name: 'Dashboard', href: '/maintenance-dashboard', icon: LayoutDashboard },
+  { name: 'Vehicle Maintenance', href: '/vehicle-maintenance', icon: Car },
+  { name: 'Building Maintenance', href: '/building-maintenance', icon: Building2 },
+  { name: 'Generator Maintenance', href: '/generator-maintenance', icon: Zap },
+];
+
 const systemLabels = {
   'fuel-report': 'Fuel Report System',
   'travel-order': 'Travel Order System',
+  'preventive-maintenance': 'Preventive Maintenance',
 };
 
 export default function AppLayout({ children }: AppLayoutProps) {
@@ -53,7 +64,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentSystem, setCurrentSystem] = useState<SystemType>('fuel-report');
 
-  const navigation = currentSystem === 'fuel-report' ? fuelReportNavigation : travelOrderNavigation;
+  const navigation = currentSystem === 'fuel-report' 
+    ? fuelReportNavigation 
+    : currentSystem === 'travel-order' 
+      ? travelOrderNavigation 
+      : preventiveMaintenanceNavigation;
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,6 +114,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
               <SelectContent>
                 <SelectItem value="fuel-report">Fuel Report System</SelectItem>
                 <SelectItem value="travel-order">Travel Order System</SelectItem>
+                <SelectItem value="preventive-maintenance">Preventive Maintenance</SelectItem>
               </SelectContent>
             </Select>
           </div>
