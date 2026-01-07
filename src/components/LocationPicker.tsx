@@ -79,6 +79,11 @@ export default function LocationPicker({
     onOpenChange(false);
   };
 
+  // Only render dialog content when open to avoid react-leaflet initialization issues
+  if (!open) {
+    return null;
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
