@@ -105,92 +105,92 @@ export default function TripTicketPrintLayout({
       </div>
 
       {/* Date, Driver, Plate No */}
-      <table className="w-full border-collapse border border-black mb-1">
+      <table className="w-full border-collapse border border-black mb-1 table-fixed">
         <tbody>
-          <tr>
-            <td className="border border-black px-1 py-0.5 font-bold w-12">Date</td>
-            <td className="border border-black px-1 py-0.5">{format(new Date(ticket.ticket_date), 'MMMM d, yyyy')}</td>
-            <td className="border border-black px-1 py-0.5 font-bold w-14">DRIVER</td>
-            <td className="border border-black px-1 py-0.5">{ticket.drivers?.full_name || ''}</td>
-            <td className="border border-black px-1 py-0.5 font-bold w-16">PLATE No.</td>
-            <td className="border border-black px-1 py-0.5">{ticket.vehicles?.plate_no || ''}</td>
+          <tr className="h-[16px]">
+            <td className="border border-black px-1 font-bold w-[8%]">Date</td>
+            <td className="border border-black px-1 w-[25%]">{format(new Date(ticket.ticket_date), 'MMMM d, yyyy')}</td>
+            <td className="border border-black px-1 font-bold w-[10%]">DRIVER</td>
+            <td className="border border-black px-1 w-[25%]">{ticket.drivers?.full_name || ''}</td>
+            <td className="border border-black px-1 font-bold w-[12%]">PLATE No.</td>
+            <td className="border border-black px-1 w-[20%]">{ticket.vehicles?.plate_no || ''}</td>
           </tr>
         </tbody>
       </table>
 
       {/* Authorized Passengers - 3 column layout */}
       <p className="font-bold mb-0.5 text-[8px]">Authorized Passengers:</p>
-      <table className="w-full border-collapse border border-black mb-1">
+      <table className="w-full border-collapse border border-black mb-1 table-fixed">
         <tbody>
-          <tr>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">1</td>
-            <td className="border border-black px-1 py-0.5">{passengerSlots[0]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">4</td>
-            <td className="border border-black px-1 py-0.5">{passengerSlots[3]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">7</td>
-            <td className="border border-black px-1 py-0.5">{passengerSlots[6]}</td>
+          <tr className="h-[14px]">
+            <td className="border border-black px-1 w-[3%] text-center">1</td>
+            <td className="border border-black px-1 w-[30%]">{passengerSlots[0]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">4</td>
+            <td className="border border-black px-1 w-[30%]">{passengerSlots[3]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">7</td>
+            <td className="border border-black px-1 w-[30%]">{passengerSlots[6]}</td>
           </tr>
-          <tr>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">2</td>
-            <td className="border border-black px-1 py-0.5">{passengerSlots[1]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">5</td>
-            <td className="border border-black px-1 py-0.5">{passengerSlots[4]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">8</td>
-            <td className="border border-black px-1 py-0.5">{passengerSlots[7]}</td>
+          <tr className="h-[14px]">
+            <td className="border border-black px-1 w-[3%] text-center">2</td>
+            <td className="border border-black px-1 w-[30%]">{passengerSlots[1]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">5</td>
+            <td className="border border-black px-1 w-[30%]">{passengerSlots[4]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">8</td>
+            <td className="border border-black px-1 w-[30%]">{passengerSlots[7]}</td>
           </tr>
-          <tr>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">3</td>
-            <td className="border border-black px-1 py-0.5">{passengerSlots[2]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">6</td>
-            <td className="border border-black px-1 py-0.5">{passengerSlots[5]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">9</td>
-            <td className="border border-black px-1 py-0.5">{passengerSlots[8]}</td>
+          <tr className="h-[14px]">
+            <td className="border border-black px-1 w-[3%] text-center">3</td>
+            <td className="border border-black px-1 w-[30%]">{passengerSlots[2]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">6</td>
+            <td className="border border-black px-1 w-[30%]">{passengerSlots[5]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">9</td>
+            <td className="border border-black px-1 w-[30%]">{passengerSlots[8]}</td>
           </tr>
         </tbody>
       </table>
 
       {/* Destinations - 3 column layout */}
       <p className="font-bold mb-0.5 text-[8px]">Destinations:</p>
-      <table className="w-full border-collapse border border-black mb-1">
+      <table className="w-full border-collapse border border-black mb-1 table-fixed">
         <tbody>
-          <tr>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">1</td>
-            <td className="border border-black px-1 py-0.5">{destinationSlots[0]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">4</td>
-            <td className="border border-black px-1 py-0.5">{destinationSlots[3]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">7</td>
-            <td className="border border-black px-1 py-0.5">{destinationSlots[6]}</td>
+          <tr className="h-[14px]">
+            <td className="border border-black px-1 w-[3%] text-center">1</td>
+            <td className="border border-black px-1 w-[30%]">{destinationSlots[0]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">4</td>
+            <td className="border border-black px-1 w-[30%]">{destinationSlots[3]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">7</td>
+            <td className="border border-black px-1 w-[30%]">{destinationSlots[6]}</td>
           </tr>
-          <tr>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">2</td>
-            <td className="border border-black px-1 py-0.5">{destinationSlots[1]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">5</td>
-            <td className="border border-black px-1 py-0.5">{destinationSlots[4]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">8</td>
-            <td className="border border-black px-1 py-0.5">{destinationSlots[7]}</td>
+          <tr className="h-[14px]">
+            <td className="border border-black px-1 w-[3%] text-center">2</td>
+            <td className="border border-black px-1 w-[30%]">{destinationSlots[1]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">5</td>
+            <td className="border border-black px-1 w-[30%]">{destinationSlots[4]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">8</td>
+            <td className="border border-black px-1 w-[30%]">{destinationSlots[7]}</td>
           </tr>
-          <tr>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">3</td>
-            <td className="border border-black px-1 py-0.5">{destinationSlots[2]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">6</td>
-            <td className="border border-black px-1 py-0.5">{destinationSlots[5]}</td>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">9</td>
-            <td className="border border-black px-1 py-0.5">{destinationSlots[8]}</td>
+          <tr className="h-[14px]">
+            <td className="border border-black px-1 w-[3%] text-center">3</td>
+            <td className="border border-black px-1 w-[30%]">{destinationSlots[2]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">6</td>
+            <td className="border border-black px-1 w-[30%]">{destinationSlots[5]}</td>
+            <td className="border border-black px-1 w-[3%] text-center">9</td>
+            <td className="border border-black px-1 w-[30%]">{destinationSlots[8]}</td>
           </tr>
         </tbody>
       </table>
 
       {/* Purpose */}
       <p className="font-bold mb-0.5 text-[8px]">Purpose/s:</p>
-      <table className="w-full border-collapse border border-black mb-1">
+      <table className="w-full border-collapse border border-black mb-1 table-fixed">
         <tbody>
-          <tr>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">1</td>
-            <td className="border border-black px-1 py-0.5">{ticket.purpose || ''}</td>
+          <tr className="h-[14px]">
+            <td className="border border-black px-1 w-[3%] text-center">1</td>
+            <td className="border border-black px-1">{ticket.purpose || ''}</td>
           </tr>
-          <tr>
-            <td className="border border-black px-1 py-0.5 w-4 text-center">2</td>
-            <td className="border border-black px-1 py-0.5">&nbsp;</td>
+          <tr className="h-[14px]">
+            <td className="border border-black px-1 w-[3%] text-center">2</td>
+            <td className="border border-black px-1">&nbsp;</td>
           </tr>
         </tbody>
       </table>
@@ -207,38 +207,38 @@ export default function TripTicketPrintLayout({
 
       {/* Trip Details Section */}
       <p className="font-bold text-center text-[8px] mb-1">TO BE FILLED ONLY BY THE DRIVER AFTER END OF TRIP</p>
-      <table className="w-full border-collapse border border-black mb-1">
+      <table className="w-full border-collapse border border-black mb-1 table-fixed">
         <thead>
-          <tr>
-            <th className="border border-black px-1 py-0.5 text-center text-[8px]" rowSpan={2}>DATE</th>
-            <th className="border border-black px-1 py-0.5 text-center text-[8px]" rowSpan={2}>TRIP NO.</th>
-            <th className="border border-black px-1 py-0.5 text-center text-[8px]" colSpan={2}>DEPARTURE</th>
-            <th className="border border-black px-1 py-0.5 text-center text-[8px]" colSpan={2}>ARRIVAL</th>
-            <th className="border border-black px-1 py-0.5 text-center text-[8px]" rowSpan={2}>ODOMETER READING</th>
+          <tr className="h-[14px]">
+            <th className="border border-black px-1 text-center text-[8px] w-[10%]" rowSpan={2}>DATE</th>
+            <th className="border border-black px-1 text-center text-[8px] w-[8%]" rowSpan={2}>TRIP NO.</th>
+            <th className="border border-black px-1 text-center text-[8px]" colSpan={2}>DEPARTURE</th>
+            <th className="border border-black px-1 text-center text-[8px]" colSpan={2}>ARRIVAL</th>
+            <th className="border border-black px-1 text-center text-[8px] w-[20%]" rowSpan={2}>ODOMETER READING</th>
           </tr>
-          <tr>
-            <th className="border border-black px-1 py-0.5 text-center text-[7px]">TIME</th>
-            <th className="border border-black px-1 py-0.5 text-center text-[7px]">PLACE</th>
-            <th className="border border-black px-1 py-0.5 text-center text-[7px]">TIME</th>
-            <th className="border border-black px-1 py-0.5 text-center text-[7px]">PLACE</th>
+          <tr className="h-[14px]">
+            <th className="border border-black px-1 text-center text-[7px] w-[10%]">TIME</th>
+            <th className="border border-black px-1 text-center text-[7px] w-[16%]">PLACE</th>
+            <th className="border border-black px-1 text-center text-[7px] w-[10%]">TIME</th>
+            <th className="border border-black px-1 text-center text-[7px] w-[16%]">PLACE</th>
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: Math.max(4, tripDetails.length) }, (_, i) => {
+          {Array.from({ length: 4 }, (_, i) => {
             const detail = tripDetails[i];
             const isFirst = i === 0;
             const isSecond = i === 1;
             return (
-              <tr key={i}>
-                <td className="border border-black px-1 py-0.5 text-center text-[8px]">
+              <tr key={i} className="h-[16px]">
+                <td className="border border-black px-1 text-center text-[8px]">
                   {detail?.trip_date ? format(new Date(detail.trip_date), 'M/d/yy') : ''}
                 </td>
-                <td className="border border-black px-1 py-0.5 text-center text-[8px]">{detail?.trip_no || ''}</td>
-                <td className="border border-black px-1 py-0.5 text-center text-[8px]">{detail?.departure_time || ''}</td>
-                <td className="border border-black px-1 py-0.5 text-[8px]">{detail?.departure_place || ''}</td>
-                <td className="border border-black px-1 py-0.5 text-center text-[8px]">{detail?.arrival_time || ''}</td>
-                <td className="border border-black px-1 py-0.5 text-[8px]">{detail?.arrival_place || ''}</td>
-                <td className="border border-black px-1 py-0.5 text-right text-[7px]">
+                <td className="border border-black px-1 text-center text-[8px]">{detail?.trip_no || ''}</td>
+                <td className="border border-black px-1 text-center text-[8px]">{detail?.departure_time || ''}</td>
+                <td className="border border-black px-1 text-[8px] truncate">{detail?.departure_place || ''}</td>
+                <td className="border border-black px-1 text-center text-[8px]">{detail?.arrival_time || ''}</td>
+                <td className="border border-black px-1 text-[8px] truncate">{detail?.arrival_place || ''}</td>
+                <td className="border border-black px-1 text-right text-[7px]">
                   {isFirst && (
                     <div className="flex justify-between items-center">
                       <span>1. Initial Reading</span>
