@@ -160,34 +160,34 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
           <div className="w-[25%]">
             <p className="text-[11px]">( ) <span className="font-bold">Actual</span></p>
           </div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <div className="flex">
           <div className="w-[25%] pl-12 text-[11px]">Food</div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <div className="flex">
           <div className="w-[25%] pl-12 text-[11px]">Transportation</div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <div className="flex">
           <div className="w-[25%] pl-12 text-[11px]">Accommodation</div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
       </div>
@@ -198,34 +198,34 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
           <div className="w-[25%]">
             <p className="text-[11px]">( ) <span className="font-bold">Per Diem</span></p>
           </div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <div className="flex">
           <div className="w-[25%] pl-12 text-[11px]">Accommodation</div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <div className="flex">
           <div className="w-[25%] pl-12 text-[11px]">Meals/Food</div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <div className="flex">
           <div className="w-[25%] pl-12 text-[11px]">Incidental expenses</div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
       </div>
@@ -236,34 +236,34 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
           <div className="w-[25%]">
             <p className="text-[11px]">({order.transportation_type ? 'X' : ' '}) <span className="font-bold">Transportation</span></p>
           </div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <div className="flex">
           <div className="w-[25%] pl-12 text-[11px]">Official Vehicle</div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black text-center">{order.transportation_type === 'official_vehicle' ? 'X' : ''}</div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1 text-center">{order.transportation_type === 'official_vehicle' ? 'X' : ''}</div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <div className="flex">
           <div className="w-[25%] pl-12 text-[11px]">Public Conveyance</div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black text-center">{order.transportation_type === 'public_conveyance' ? 'X' : ''}</div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1 text-center">{order.transportation_type === 'public_conveyance' ? 'X' : ''}</div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <div className="flex">
           <div className="w-[25%] pl-12 text-[10px]">(Airplane, Bus, Taxi)</div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
       </div>
@@ -274,10 +274,10 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
           <div className="w-[25%]">
             <p className="text-[11px]">( ) <span className="font-bold">Others</span></p>
           </div>
-          <div className="w-[75%] flex">
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
-            <div className="flex-1 border-b border-black"></div>
+          <div className="w-[75%] flex gap-4">
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
+            <div className="flex-1 border-b border-black mx-1"></div>
           </div>
         </div>
         <p className="text-[11px]">Remarks/ Special Instructions</p>
