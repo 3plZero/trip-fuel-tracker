@@ -68,22 +68,22 @@ export default function TripTicketPrintLayout({
   return (
     <div className="print-layout bg-white text-black p-6 text-[10px] leading-tight max-w-[8.5in] mx-auto font-serif">
       {/* Header */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <img src={dostLogo} alt="DOST Logo" className="w-14 h-14 object-contain" />
-          <div className="text-left">
-            <p className="font-bold text-[12px]">DEPARTMENT OF SCIENCE AND TECHNOLOGY</p>
-            <p className="text-[11px] italic">Cordillera Administrative Region</p>
-          </div>
-        </div>
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className="text-right text-[8px] leading-tight">
+          <img src={isoLogo} alt="ISO Certification" className="w-12 h-12 object-contain" />
+          <div className="text-left text-[8px] leading-tight">
             <p className="font-bold">CERTIFICATION</p>
             <p className="font-bold">INTERNATIONAL</p>
             <p className="font-bold">ISO 9001:2015</p>
             <p className="text-[7px]">Cert. No. CIP/4213/09/01/615</p>
           </div>
-          <img src={isoLogo} alt="ISO Certification" className="w-12 h-12 object-contain" />
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="text-left">
+            <p className="font-bold text-[12px]">DEPARTMENT OF SCIENCE AND TECHNOLOGY</p>
+            <p className="text-[11px] italic text-blue-600">Cordillera Administrative Region</p>
+          </div>
+          <img src={dostLogo} alt="DOST Logo" className="w-14 h-14 object-contain" />
         </div>
       </div>
 
