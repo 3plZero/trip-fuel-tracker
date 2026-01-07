@@ -134,6 +134,8 @@
     color: black !important;
     margin: 0 !important;
     padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .print-page {
@@ -144,8 +146,9 @@
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 0.5in !important;
-    font-size: 11px !important;
+    padding: 0.3in !important;
+    font-size: 9px !important;
+    line-height: 1.1 !important;
   }
 
   .print-layout table {
@@ -155,10 +158,11 @@
   .print-layout td,
   .print-layout th {
     border: 1px solid black !important;
+    padding: 2px 4px !important;
   }
 
   @page {
-    size: letter;
-    margin: 0.25in;
+    size: A4;
+    margin: 0.2in;
   }
 }
