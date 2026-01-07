@@ -40,197 +40,165 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
       return format(start, 'MMMM d, yyyy');
     }
     if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
-      return `${format(start, 'MMMM d')} & ${format(end, 'd, yyyy')}`;
+      return `${format(start, 'MMMM d')}-${format(end, 'd, yyyy')}`;
     }
     return `${format(start, 'MMMM d, yyyy')} - ${format(end, 'MMMM d, yyyy')}`;
   };
 
-  // Ensure at least 5 rows for personnel
-  const personnelRows = [...personnel];
-  while (personnelRows.length < 5) {
-    personnelRows.push({ name: '', position: null, division_agency: null });
-  }
-
   return (
-    <div className="print-layout bg-white text-black p-6 text-[10px] leading-tight max-w-[8.5in] mx-auto">
+    <div className="print-layout bg-white text-black p-8 text-[11px] leading-normal max-w-[8.5in] mx-auto font-serif">
       {/* Header */}
       <div className="flex items-start justify-between mb-2">
-        <img src={dostLogo} alt="DOST Logo" className="w-14 h-14 object-contain" />
+        <img src={dostLogo} alt="DOST Logo" className="w-16 h-16 object-contain" />
         <div className="text-center flex-1 px-4">
-          <p className="text-[10px] italic">Republic of the Philippines</p>
-          <p className="font-bold text-[12px]">DEPARTMENT OF SCIENCE AND TECHNOLOGY</p>
-          <p className="text-[10px] italic text-blue-700">Cordillera Administrative Region</p>
-          <p className="text-[9px]">Km.6, La Trinidad, Benguet</p>
+          <p className="text-[11px] italic">Republic of the Philippines</p>
+          <p className="font-bold text-[13px] tracking-wide">DEPARTMENT OF SCIENCE AND TECHNOLOGY</p>
+          <p className="text-[11px] italic text-blue-700">Cordillera Administrative Region</p>
+          <p className="text-[10px]">Km.6, La Trinidad, Benguet</p>
         </div>
         <div className="flex items-start gap-1">
-          <img src={isoLogo} alt="ISO Certification" className="w-10 h-10 object-contain" />
+          <img src={isoLogo} alt="ISO Certification" className="w-12 h-12 object-contain" />
           <div className="text-right text-[7px] leading-tight">
             <p className="font-bold">CERTIFICATION</p>
             <p className="font-bold">INTERNATIONAL</p>
-            <p className="font-bold">ISO 9001:2015</p>
-            <p className="text-[6px]">Cert. No. CIP/4213/09/01/615</p>
           </div>
         </div>
       </div>
 
       {/* Date - right aligned */}
-      <div className="text-right mb-4">
-        <p className="text-[10px]">{format(new Date(order.order_date), 'MMMM d, yyyy')}</p>
+      <div className="text-right mb-6">
+        <p className="text-[11px]">{format(new Date(order.order_date), 'MMMM d, yyyy')}</p>
       </div>
 
       {/* Title */}
-      <div className="mb-3">
-        <p className="font-bold text-[11px]">LOCAL TRAVEL ORDER No. {order.travel_order_no}</p>
+      <div className="mb-4">
+        <p className="font-bold text-[12px]">LOCAL TRAVEL ORDER No. {order.travel_order_no}</p>
       </div>
 
       {/* Authority Statement */}
-      <p className="text-[10px] mb-2">Authority to Travel is hereby granted to:</p>
+      <p className="text-[11px] mb-3">Authority to Travel is hereby granted to:</p>
 
-      {/* Personnel Table */}
-      <table className="w-full border-collapse mb-1">
-        <thead>
-          <tr>
-            <td className="border-b border-black px-1 py-1 text-[9px] font-bold w-[35%]">NAME</td>
-            <td className="border-b border-black px-1 py-1 text-[9px] font-bold w-[15%]">POSITION</td>
-            <td className="border-b border-black px-1 py-1 text-[9px] font-bold w-[25%]">DIVISION/AGENCY</td>
-            <td className="border-b border-black px-1 py-1 text-[9px] font-bold w-[25%]">Inclusive Date/s of Travel:</td>
-          </tr>
-        </thead>
-        <tbody>
-          {personnelRows.map((person, index) => (
-            <tr key={index}>
-              <td className="px-1 py-0.5 text-[9px] h-[16px]">{person.name}</td>
-              <td className="px-1 py-0.5 text-[9px]">{person.position || ''}</td>
-              <td className="px-1 py-0.5 text-[9px]">{person.division_agency || ''}</td>
-              {index === 0 && (
-                <td className="px-1 py-0.5 text-[9px]" rowSpan={personnelRows.length}>
-                  {formatInclusiveDates()}
-                </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Personnel Section */}
+      <div className="mb-4">
+        <div className="flex mb-1">
+          <div className="w-[30%]">
+            <p className="font-bold text-[10px]">NAME</p>
+          </div>
+          <div className="w-[15%]">
+            <p className="font-bold text-[10px]">POSITION</p>
+          </div>
+          <div className="w-[25%]">
+            <p className="font-bold text-[10px]">DIVISION/AGENCY</p>
+          </div>
+          <div className="w-[30%]">
+            <p className="font-bold text-[10px]">Inclusive Date/s of Travel:</p>
+          </div>
+        </div>
+        {personnel.length > 0 ? (
+          personnel.map((person, index) => (
+            <div key={index} className="flex">
+              <div className="w-[30%]">
+                <p className="text-[11px]">{person.name}</p>
+              </div>
+              <div className="w-[15%]">
+                <p className="text-[11px]">{person.position || ''}</p>
+              </div>
+              <div className="w-[25%]">
+                <p className="text-[11px]">{person.division_agency || ''}</p>
+              </div>
+              <div className="w-[30%]">
+                {index === 0 && <p className="text-[11px]">{formatInclusiveDates()}</p>}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="flex">
+            <div className="w-[30%]"><p className="text-[11px]">&nbsp;</p></div>
+            <div className="w-[15%]"><p className="text-[11px]">&nbsp;</p></div>
+            <div className="w-[25%]"><p className="text-[11px]">&nbsp;</p></div>
+            <div className="w-[30%]"><p className="text-[11px]">&nbsp;</p></div>
+          </div>
+        )}
+      </div>
 
-      {/* Destination and Purpose - Combined Row */}
-      <table className="w-full border-collapse mb-1">
-        <tbody>
-          <tr>
-            <td className="border-t border-black px-1 py-2 text-[9px] align-top w-[35%]">
-              {order.destinations || ''}
-            </td>
-            <td className="border-t border-black px-1 py-2 text-[9px] align-top" colSpan={3}>
-              {order.purpose || ''}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {/* Destination and Purpose */}
+      <div className="flex mb-4 mt-6">
+        <div className="w-[35%] pr-4">
+          <p className="font-bold text-[10px] text-blue-700 mb-1">Destination/s:</p>
+          <p className="text-[11px]">{order.destinations || ''}</p>
+        </div>
+        <div className="w-[25%] pr-4">
+          <p className="font-bold text-[10px] text-blue-700 mb-1">Inclusive Date/s of Travel:</p>
+          <p className="text-[11px]">{order.purpose ? `*${order.purpose.substring(0, 50)}` : ''}</p>
+        </div>
+        <div className="w-[40%]">
+          <p className="font-bold text-[10px] text-blue-700 mb-1">Purpose of Travel:</p>
+          <p className="text-[11px]">{order.purpose || ''}</p>
+        </div>
+      </div>
 
       {/* Travel Expenses Header */}
-      <table className="w-full border-collapse mb-0">
-        <tbody>
-          <tr>
-            <td className="border-t border-black px-1 py-1 text-[9px] w-[20%] align-top">
-              <p className="font-bold">Travel Expenses to</p>
-              <p className="font-bold">be Incurred:</p>
-            </td>
-            <td className="border-t border-black px-1 py-1 text-[9px] align-top" colSpan={4}>
-              <p className="font-bold">Appropriation/Fund to which travel expenses would be charged to:</p>
-              <div className="flex gap-4 mt-1">
-                <span>({order.expense_type === 'general_fund' ? 'X' : ' '}) General Fund</span>
-                <span>({order.expense_type === 'project_funds' ? 'X' : ' '}) Project Funds</span>
-                <span>({order.expense_type === 'others' ? 'X' : ' '}) Others: (e.g. sponsor/</span>
-              </div>
-              <div className="ml-64 -mt-0.5">
-                <span className="text-[8px]">requesting agency)</span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="flex mb-2 mt-6">
+        <div className="w-[25%]">
+          <p className="font-bold text-[10px] text-blue-700">Travel Expenses to</p>
+          <p className="font-bold text-[10px] text-blue-700">be Incurred:</p>
+        </div>
+        <div className="w-[75%]">
+          <p className="font-bold text-[10px]">Appropriation/Fund to which travel expenses would be charged to:</p>
+          <div className="flex gap-6 mt-1 text-[11px]">
+            <span>({order.expense_type === 'general_fund' ? 'X' : ' '}) General Fund</span>
+            <span>( ) Project Funds</span>
+            <span>( ) Others: (e.g. sponsor/</span>
+          </div>
+          <p className="text-[10px] ml-72">requesting agency)</p>
+        </div>
+      </div>
 
-      {/* Actual/Per Diem/Transportation Section */}
-      <table className="w-full border-collapse mb-0">
-        <tbody>
-          {/* Actual Section */}
-          <tr>
-            <td className="px-1 py-0.5 text-[9px] w-[20%]">({order.has_actual_expenses ? 'X' : ' '}) <span className="font-bold">Actual</span></td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={4}></td>
-          </tr>
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]"></td>
-            <td className="px-1 py-0.5 text-[9px]">Food</td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={3}></td>
-          </tr>
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]"></td>
-            <td className="px-1 py-0.5 text-[9px]">Transportation</td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={3}></td>
-          </tr>
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]"></td>
-            <td className="px-1 py-0.5 text-[9px]">Accommodation</td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={3}></td>
-          </tr>
-          {/* Per Diem Section */}
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]">({order.has_per_diem ? 'X' : ' '}) <span className="font-bold">Per Diem</span></td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={4}></td>
-          </tr>
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]"></td>
-            <td className="px-1 py-0.5 text-[9px]">Accommodation</td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={3}></td>
-          </tr>
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]"></td>
-            <td className="px-1 py-0.5 text-[9px]">Meals/Food</td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={3}></td>
-          </tr>
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]"></td>
-            <td className="px-1 py-0.5 text-[9px]">Incidental expenses</td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={3}></td>
-          </tr>
-          {/* Transportation Section */}
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]">({order.transportation_type ? 'X' : ' '}) <span className="font-bold">Transportation</span></td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={4}></td>
-          </tr>
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]"></td>
-            <td className="px-1 py-0.5 text-[9px]">Official Vehicle</td>
-            <td className="px-1 py-0.5 text-[9px]">{order.transportation_type === 'official_vehicle' ? 'X' : ''}</td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={2}></td>
-          </tr>
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]"></td>
-            <td className="px-1 py-0.5 text-[9px]">Public Conveyance</td>
-            <td className="px-1 py-0.5 text-[9px]">{order.transportation_type === 'public_conveyance' ? 'X' : ''}</td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={2}></td>
-          </tr>
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]"></td>
-            <td className="px-1 py-0.5 text-[9px]">(Airplane, Bus, Taxi)</td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={3}></td>
-          </tr>
-          {/* Others Section */}
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]">( ) <span className="font-bold">Others</span></td>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={4}></td>
-          </tr>
-          {/* Remarks Header */}
-          <tr>
-            <td className="px-1 py-0.5 text-[9px]" colSpan={5}>
-              <span className="font-bold">Remarks/ Special Instructions</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {/* Actual Section */}
+      <div className="mb-1">
+        <p className="text-[11px]">( ) <span className="font-bold">Actual</span></p>
+        <div className="ml-12 text-[11px]">
+          <p>Food</p>
+          <p>Transportation</p>
+          <p>Accommodation</p>
+        </div>
+      </div>
 
-      {/* Remarks Content */}
-      <div className="border-t border-black pt-2 mb-3 mt-1">
-        <p className="text-[9px] italic leading-snug">
+      {/* Per Diem Section */}
+      <div className="mb-1">
+        <p className="text-[11px]">( ) <span className="font-bold">Per Diem</span></p>
+        <div className="ml-12 text-[11px]">
+          <p>Accommodation</p>
+          <p>Meals/Food</p>
+          <p>Incidental expenses</p>
+        </div>
+      </div>
+
+      {/* Transportation Section */}
+      <div className="mb-1">
+        <p className="text-[11px]">({order.transportation_type ? 'X' : ' '}) <span className="font-bold">Transportation</span></p>
+        <div className="ml-12 text-[11px] flex">
+          <div className="w-40">
+            <p>Official Vehicle</p>
+            <p>Public Conveyance</p>
+            <p className="text-[10px]">(Airplane, Bus, Taxi)</p>
+          </div>
+          <div className="ml-4">
+            <p>{order.transportation_type === 'official_vehicle' ? 'X' : ''}</p>
+            <p>{order.transportation_type === 'public_conveyance' ? 'X' : ''}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Others Section */}
+      <div className="mb-2">
+        <p className="text-[11px]">( ) <span className="font-bold">Others</span></p>
+        <p className="text-[11px]">Remarks/ Special Instructions</p>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="mt-6 mb-6">
+        <p className="text-[10px] italic leading-snug">
           A report of your travel must be submitted to the Agency Head/ Supervising official within 7 days from completion of
           travel. Liquidation of cash advance should be in accordance with Executive Order No. 298: Rules and Regulations and
           New Rates of Allowances for Official Local and foreign Travels of Government Personnel.
@@ -238,12 +206,12 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
       </div>
 
       {/* Approval Section */}
-      <div className="mt-4 ml-8">
-        <p className="text-[10px] mb-6">Approved by:</p>
-        <div className="w-48">
-          <div className="border-b border-black mb-0.5 h-5"></div>
-          <p className="font-bold text-[10px]">{order.approved_by || ''}</p>
-          <p className="text-[9px]">{order.approved_by_position || ''}</p>
+      <div className="mt-8 ml-8">
+        <p className="text-[11px] mb-8">Approved by:</p>
+        <div className="w-56">
+          <div className="border-b border-black mb-0.5 h-6"></div>
+          <p className="font-bold text-[11px]">{order.approved_by || ''}</p>
+          <p className="text-[10px]">{order.approved_by_position || ''}</p>
         </div>
       </div>
     </div>
