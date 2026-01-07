@@ -86,6 +86,142 @@ export type Database = {
         }
         Relationships: []
       }
+      travel_order_expenses: {
+        Row: {
+          amount: number | null
+          expense_category: string
+          id: string
+          is_actual: boolean | null
+          is_per_diem: boolean | null
+          travel_order_id: string
+        }
+        Insert: {
+          amount?: number | null
+          expense_category: string
+          id?: string
+          is_actual?: boolean | null
+          is_per_diem?: boolean | null
+          travel_order_id: string
+        }
+        Update: {
+          amount?: number | null
+          expense_category?: string
+          id?: string
+          is_actual?: boolean | null
+          is_per_diem?: boolean | null
+          travel_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "travel_order_expenses_travel_order_id_fkey"
+            columns: ["travel_order_id"]
+            isOneToOne: false
+            referencedRelation: "travel_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      travel_order_personnel: {
+        Row: {
+          division_agency: string | null
+          id: string
+          name: string
+          position: string | null
+          sort_order: number | null
+          travel_order_id: string
+        }
+        Insert: {
+          division_agency?: string | null
+          id?: string
+          name: string
+          position?: string | null
+          sort_order?: number | null
+          travel_order_id: string
+        }
+        Update: {
+          division_agency?: string | null
+          id?: string
+          name?: string
+          position?: string | null
+          sort_order?: number | null
+          travel_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "travel_order_personnel_travel_order_id_fkey"
+            columns: ["travel_order_id"]
+            isOneToOne: false
+            referencedRelation: "travel_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      travel_orders: {
+        Row: {
+          approved_by: string | null
+          approved_by_position: string | null
+          created_at: string | null
+          created_by: string | null
+          destinations: string | null
+          expense_type: string | null
+          expense_type_other: string | null
+          has_actual_expenses: boolean | null
+          has_per_diem: boolean | null
+          id: string
+          inclusive_dates_end: string | null
+          inclusive_dates_start: string | null
+          order_date: string
+          purpose: string | null
+          remarks: string | null
+          status: string | null
+          transportation_type: string | null
+          travel_order_no: string
+          updated_at: string | null
+        }
+        Insert: {
+          approved_by?: string | null
+          approved_by_position?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          destinations?: string | null
+          expense_type?: string | null
+          expense_type_other?: string | null
+          has_actual_expenses?: boolean | null
+          has_per_diem?: boolean | null
+          id?: string
+          inclusive_dates_end?: string | null
+          inclusive_dates_start?: string | null
+          order_date?: string
+          purpose?: string | null
+          remarks?: string | null
+          status?: string | null
+          transportation_type?: string | null
+          travel_order_no: string
+          updated_at?: string | null
+        }
+        Update: {
+          approved_by?: string | null
+          approved_by_position?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          destinations?: string | null
+          expense_type?: string | null
+          expense_type_other?: string | null
+          has_actual_expenses?: boolean | null
+          has_per_diem?: boolean | null
+          id?: string
+          inclusive_dates_end?: string | null
+          inclusive_dates_start?: string | null
+          order_date?: string
+          purpose?: string | null
+          remarks?: string | null
+          status?: string | null
+          transportation_type?: string | null
+          travel_order_no?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       trip_details: {
         Row: {
           arrival_place: string | null
@@ -422,6 +558,7 @@ export type Database = {
     }
     Functions: {
       generate_tr_no: { Args: never; Returns: string }
+      generate_travel_order_no: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
