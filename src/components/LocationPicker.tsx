@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,10 +8,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { MapPin, Loader2 } from 'lucide-react';
-
-// Lazy load the map component to avoid SSR/hydration issues
-const MapComponent = lazy(() => import('./MapComponent'));
+import { MapPin } from 'lucide-react';
+import MapComponent from './MapComponent';
 
 interface LocationPickerProps {
   open: boolean;
@@ -70,18 +68,10 @@ export default function LocationPicker({
         </DialogHeader>
 
         <div className="h-[400px] w-full rounded-md overflow-hidden border">
-          <Suspense
-            fallback={
-              <div className="h-full w-full flex items-center justify-center bg-muted">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            }
-          >
-            <MapComponent
-              position={position}
-              onLocationSelect={handleMapClick}
-            />
-          </Suspense>
+          <MapComponent
+            position={position}
+            onLocationSelect={handleMapClick}
+          />
         </div>
 
         {position && (
