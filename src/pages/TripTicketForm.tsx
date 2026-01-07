@@ -499,25 +499,36 @@ export default function TripTicketForm() {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Vehicle Location Button - only show when completed and vehicle selected */}
-            {formData.status === 'completed' && formData.vehicle_id && (
-              <div className="space-y-2">
-                <Label>Vehicle Location</Label>
-                <Button
-                  type="button"
-                  variant={selectedLocation ? 'default' : 'outline'}
-                  className="w-full"
-                  onClick={() => setShowLocationPicker(true)}
-                >
-                  <MapPin className="mr-2 h-4 w-4" />
-                  {selectedLocation
-                    ? `${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`
-                    : 'Set Location'}
-                </Button>
-              </div>
-            )}
           </CardContent>
+          
+          {/* Vehicle Location Button - only show when completed and vehicle selected */}
+          {formData.status === 'completed' && formData.vehicle_id && (
+            <CardContent className="pt-0">
+              <div className="rounded-lg border border-dashed border-primary/50 bg-primary/5 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="font-medium">Set Vehicle Storage Location</p>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedLocation
+                          ? `Location: ${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`
+                          : 'Mark where the vehicle is stored after this trip'}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant={selectedLocation ? 'default' : 'outline'}
+                    onClick={() => setShowLocationPicker(true)}
+                  >
+                    <MapPin className="mr-2 h-4 w-4" />
+                    {selectedLocation ? 'Change Location' : 'Set Location'}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          )}
         </Card>
 
         {/* Location Picker Dialog */}
