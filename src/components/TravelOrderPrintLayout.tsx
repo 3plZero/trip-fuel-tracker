@@ -80,7 +80,7 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
 
       {/* Personnel Section */}
       <div className="mb-4">
-        <div className="flex mb-1">
+        <div className="flex border-b border-black pb-1 mb-1">
           <div className="w-[30%]">
             <p className="font-bold text-[10px]">NAME</p>
           </div>
@@ -122,7 +122,7 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
       </div>
 
       {/* Destination and Purpose */}
-      <div className="flex mb-4 mt-6">
+      <div className="flex mb-4 mt-6 border-t border-black pt-2">
         <div className="w-[35%] pr-4">
           <p className="font-bold text-[10px] text-blue-700 mb-1">Destination/s:</p>
           <p className="text-[11px]">{order.destinations || ''}</p>
@@ -138,7 +138,7 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
       </div>
 
       {/* Travel Expenses Header */}
-      <div className="flex mb-2 mt-6">
+      <div className="flex mb-2 mt-6 border-t border-black pt-2">
         <div className="w-[25%]">
           <p className="font-bold text-[10px] text-blue-700">Travel Expenses to</p>
           <p className="font-bold text-[10px] text-blue-700">be Incurred:</p>
@@ -197,7 +197,7 @@ export default function TravelOrderPrintLayout({ order, personnel }: Props) {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-6 mb-6">
+      <div className="mt-6 mb-6 border-t border-black pt-2">
         <p className="text-[10px] italic leading-snug">
           A report of your travel must be submitted to the Agency Head/ Supervising official within 7 days from completion of
           travel. Liquidation of cash advance should be in accordance with Executive Order No. 298: Rules and Regulations and
