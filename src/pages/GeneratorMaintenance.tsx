@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Eye, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Eye, Pencil, Trash2, Search, Zap, List } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import {
@@ -88,13 +88,25 @@ export default function GeneratorMaintenance() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-3xl font-bold">Generator Maintenance</h1>
-        <Link to="/generator-maintenance/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" /> New Checklist
-          </Button>
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/generators">
+            <Button variant="outline">
+              <List className="h-4 w-4 mr-2" /> View Generators
+            </Button>
+          </Link>
+          <Link to="/generators?action=new">
+            <Button variant="outline">
+              <Zap className="h-4 w-4 mr-2" /> New Generator
+            </Button>
+          </Link>
+          <Link to="/generator-maintenance/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" /> New Checklist
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
