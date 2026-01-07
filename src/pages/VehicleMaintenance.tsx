@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Eye, Pencil, Trash2, Search, Car, List } from 'lucide-react';
+import { Plus, Eye, Pencil, Trash2, Search, Car } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import {
@@ -92,11 +92,6 @@ export default function VehicleMaintenance() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-3xl font-bold">Vehicle Maintenance</h1>
         <div className="flex flex-wrap gap-2">
-          <Link to="/vehicles">
-            <Button variant="outline">
-              <List className="h-4 w-4 mr-2" /> View Vehicles
-            </Button>
-          </Link>
           <Link to="/vehicles?action=new">
             <Button variant="outline">
               <Car className="h-4 w-4 mr-2" /> New Vehicle

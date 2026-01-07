@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Eye, Pencil, Trash2, Search, Building2, List } from 'lucide-react';
+import { Plus, Eye, Pencil, Trash2, Search, Building2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import {
@@ -91,11 +91,6 @@ export default function BuildingMaintenance() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-3xl font-bold">Building Maintenance</h1>
         <div className="flex flex-wrap gap-2">
-          <Link to="/buildings">
-            <Button variant="outline">
-              <List className="h-4 w-4 mr-2" /> View Buildings
-            </Button>
-          </Link>
           <Link to="/buildings?action=new">
             <Button variant="outline">
               <Building2 className="h-4 w-4 mr-2" /> New Building
