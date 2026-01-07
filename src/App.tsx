@@ -18,6 +18,18 @@ import Vehicles from "@/pages/Vehicles";
 import Drivers from "@/pages/Drivers";
 import Reports from "@/pages/Reports";
 import NotFound from "@/pages/NotFound";
+import MaintenanceDashboard from "@/pages/MaintenanceDashboard";
+import VehicleMaintenance from "@/pages/VehicleMaintenance";
+import VehicleMaintenanceForm from "@/pages/VehicleMaintenanceForm";
+import VehicleMaintenanceView from "@/pages/VehicleMaintenanceView";
+import BuildingMaintenance from "@/pages/BuildingMaintenance";
+import BuildingMaintenanceForm from "@/pages/BuildingMaintenanceForm";
+import BuildingMaintenanceView from "@/pages/BuildingMaintenanceView";
+import GeneratorMaintenance from "@/pages/GeneratorMaintenance";
+import GeneratorMaintenanceForm from "@/pages/GeneratorMaintenanceForm";
+import GeneratorMaintenanceView from "@/pages/GeneratorMaintenanceView";
+import Generators from "@/pages/Generators";
+import Buildings from "@/pages/Buildings";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -56,6 +68,22 @@ function AppRoutes() {
       <Route path="/travel-orders/new" element={<ProtectedRoute><TravelOrderForm /></ProtectedRoute>} />
       <Route path="/travel-orders/:id" element={<ProtectedRoute><TravelOrderView /></ProtectedRoute>} />
       <Route path="/travel-orders/:id/edit" element={<ProtectedRoute><TravelOrderForm /></ProtectedRoute>} />
+      {/* Preventive Maintenance System Routes */}
+      <Route path="/maintenance-dashboard" element={<ProtectedRoute><MaintenanceDashboard /></ProtectedRoute>} />
+      <Route path="/vehicle-maintenance" element={<ProtectedRoute><VehicleMaintenance /></ProtectedRoute>} />
+      <Route path="/vehicle-maintenance/new" element={<ProtectedRoute><VehicleMaintenanceForm /></ProtectedRoute>} />
+      <Route path="/vehicle-maintenance/:id" element={<ProtectedRoute><VehicleMaintenanceView /></ProtectedRoute>} />
+      <Route path="/vehicle-maintenance/:id/edit" element={<ProtectedRoute><VehicleMaintenanceForm /></ProtectedRoute>} />
+      <Route path="/building-maintenance" element={<ProtectedRoute><BuildingMaintenance /></ProtectedRoute>} />
+      <Route path="/building-maintenance/new" element={<ProtectedRoute><BuildingMaintenanceForm /></ProtectedRoute>} />
+      <Route path="/building-maintenance/:id" element={<ProtectedRoute><BuildingMaintenanceView /></ProtectedRoute>} />
+      <Route path="/building-maintenance/:id/edit" element={<ProtectedRoute><BuildingMaintenanceForm /></ProtectedRoute>} />
+      <Route path="/generator-maintenance" element={<ProtectedRoute><GeneratorMaintenance /></ProtectedRoute>} />
+      <Route path="/generator-maintenance/new" element={<ProtectedRoute><GeneratorMaintenanceForm /></ProtectedRoute>} />
+      <Route path="/generator-maintenance/:id" element={<ProtectedRoute><GeneratorMaintenanceView /></ProtectedRoute>} />
+      <Route path="/generator-maintenance/:id/edit" element={<ProtectedRoute><GeneratorMaintenanceForm /></ProtectedRoute>} />
+      <Route path="/generators" element={<ProtectedRoute><Generators /></ProtectedRoute>} />
+      <Route path="/buildings" element={<ProtectedRoute><Buildings /></ProtectedRoute>} />
       {/* Shared Routes */}
       <Route path="/vehicles" element={<ProtectedRoute><Vehicles /></ProtectedRoute>} />
       <Route path="/drivers" element={<ProtectedRoute><Drivers /></ProtectedRoute>} />
