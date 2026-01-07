@@ -14,9 +14,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Loader2, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Plus, Trash2, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import LocationPicker from '@/components/LocationPicker';
 
 interface Vehicle {
   id: string;
@@ -74,7 +75,8 @@ export default function TripTicketForm() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [trNo, setTrNo] = useState('');
-  
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [formData, setFormData] = useState<FormData>({
     ticket_date: format(new Date(), 'yyyy-MM-dd'),
     vehicle_id: '',
@@ -293,6 +295,18 @@ export default function TripTicketForm() {
         );
       }
 
+      // Update vehicle location if status is completed and location was selected
+      if (formData.status === 'completed' && selectedLocation && formData.vehicle_id) {
+        await supabase
+          .from('vehicles')
+          .update({
+            last_location_lat: selectedLocation.lat,
+            last_location_lng: selectedLocation.lng,
+            last_location_updated_at: new Date().toISOString(),
+          })
+          .eq('id', formData.vehicle_id);
+      }
+
       toast({
         title: isEditing ? 'Updated' : 'Created',
         description: `Trip ticket ${isEditing ? 'updated' : 'created'} successfully`,
@@ -485,8 +499,34 @@ export default function TripTicketForm() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Vehicle Location Button - only show when completed and vehicle selected */}
+            {formData.status === 'completed' && formData.vehicle_id && (
+              <div className="space-y-2">
+                <Label>Vehicle Location</Label>
+                <Button
+                  type="button"
+                  variant={selectedLocation ? 'default' : 'outline'}
+                  className="w-full"
+                  onClick={() => setShowLocationPicker(true)}
+                >
+                  <MapPin className="mr-2 h-4 w-4" />
+                  {selectedLocation
+                    ? `${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`
+                    : 'Set Location'}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Location Picker Dialog */}
+        <LocationPicker
+          open={showLocationPicker}
+          onOpenChange={setShowLocationPicker}
+          onLocationSelect={(lat, lng) => setSelectedLocation({ lat, lng })}
+          initialLocation={selectedLocation}
+        />
 
         {/* Passengers & Destinations */}
         <div className="grid gap-6 md:grid-cols-2">

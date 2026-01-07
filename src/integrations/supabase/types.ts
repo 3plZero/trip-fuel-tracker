@@ -311,6 +311,10 @@ export type Database = {
           gross_weight: number | null
           id: string
           is_active: boolean | null
+          last_location_lat: number | null
+          last_location_lng: number | null
+          last_location_name: string | null
+          last_location_updated_at: string | null
           make_brand: string | null
           max_power: string | null
           mv_file_no: string | null
@@ -346,6 +350,10 @@ export type Database = {
           gross_weight?: number | null
           id?: string
           is_active?: boolean | null
+          last_location_lat?: number | null
+          last_location_lng?: number | null
+          last_location_name?: string | null
+          last_location_updated_at?: string | null
           make_brand?: string | null
           max_power?: string | null
           mv_file_no?: string | null
@@ -381,6 +389,10 @@ export type Database = {
           gross_weight?: number | null
           id?: string
           is_active?: boolean | null
+          last_location_lat?: number | null
+          last_location_lng?: number | null
+          last_location_name?: string | null
+          last_location_updated_at?: string | null
           make_brand?: string | null
           max_power?: string | null
           mv_file_no?: string | null
