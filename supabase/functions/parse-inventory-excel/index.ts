@@ -6,6 +6,41 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Retry helper with exponential backoff
+async function fetchWithRetry(
+  url: string, 
+  options: RequestInit, 
+  maxRetries: number = 3
+): Promise<Response> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      
+      if (response.status === 429) {
+        // Rate limited - wait and retry
+        const waitTime = Math.pow(2, attempt) * 2000; // 2s, 4s, 8s
+        console.log(`Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+      
+      return response;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.error(`Fetch attempt ${attempt + 1} failed:`, lastError.message);
+      
+      if (attempt < maxRetries - 1) {
+        const waitTime = Math.pow(2, attempt) * 1000;
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+    }
+  }
+  
+  throw lastError || new Error('Max retries exceeded');
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -24,6 +59,17 @@ serve(async (req) => {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Clean and filter headers - remove null/empty values
+    const cleanHeaders = headers.filter((h: any) => h && String(h).trim());
+    
+    // Limit rows to prevent token overflow (process in chunks if needed)
+    const maxRows = 100;
+    const processRows = rows.slice(0, maxRows);
+    
+    if (rows.length > maxRows) {
+      console.log(`Warning: Processing first ${maxRows} of ${rows.length} rows`);
     }
 
     const systemPrompt = `You are a data parsing assistant for an inventory management system. Your task is to map Excel data to inventory item fields.
@@ -74,43 +120,42 @@ Return a JSON array of parsed items. For each row, map the values to the correct
 
     const userPrompt = `Parse these Excel rows into inventory items.
 
-Headers: ${JSON.stringify(headers)}
+Headers: ${JSON.stringify(cleanHeaders)}
 
-Rows (first 5 as sample):
-${JSON.stringify(rows.slice(0, 5), null, 2)}
-
-Total rows to process: ${rows.length}
-
-All rows data:
-${JSON.stringify(rows)}
+Data rows:
+${JSON.stringify(processRows)}
 
 Return ONLY a valid JSON array of objects with the mapped fields. No explanation, just the JSON array.`;
 
-    console.log("Sending request to Gemini for parsing...");
+    console.log(`Sending request to Gemini for parsing ${processRows.length} rows...`);
     
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: systemPrompt + "\n\n" + userPrompt }
-            ]
+    const response = await fetchWithRetry(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: systemPrompt + "\n\n" + userPrompt }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 8192,
           }
-        ],
-        generationConfig: {
-          temperature: 0.1,
-          maxOutputTokens: 8192,
-        }
-      }),
-    });
+        }),
+      },
+      3 // max retries
+    );
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please wait a minute and try again." }), {
           status: 429,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
