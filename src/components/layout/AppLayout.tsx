@@ -22,6 +22,8 @@ import {
   Wrench,
   Building2,
   Zap,
+  Package,
+  FolderOpen,
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { cn } from '@/lib/utils';
@@ -30,7 +32,7 @@ interface AppLayoutProps {
   children: ReactNode;
 }
 
-type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance';
+type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance' | 'inventory-system';
 
 const fuelReportNavigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -52,10 +54,17 @@ const preventiveMaintenanceNavigation = [
   { name: 'Generator Maintenance', href: '/generator-maintenance', icon: Zap },
 ];
 
+const inventoryNavigation = [
+  { name: 'Dashboard', href: '/inventory-dashboard', icon: LayoutDashboard },
+  { name: 'Categories', href: '/inventory-categories', icon: FolderOpen },
+  { name: 'All Items', href: '/inventory-items', icon: Package },
+];
+
 const systemLabels = {
   'fuel-report': 'Fuel Report System',
   'travel-order': 'Travel Order System',
   'preventive-maintenance': 'Preventive Maintenance',
+  'inventory-system': 'Inventory System',
 };
 
 export default function AppLayout({ children }: AppLayoutProps) {
@@ -68,7 +77,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
     ? fuelReportNavigation 
     : currentSystem === 'travel-order' 
       ? travelOrderNavigation 
-      : preventiveMaintenanceNavigation;
+      : currentSystem === 'inventory-system'
+        ? inventoryNavigation
+        : preventiveMaintenanceNavigation;
 
   return (
     <div className="min-h-screen bg-background">
@@ -115,6 +126,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <SelectItem value="fuel-report">Fuel Report System</SelectItem>
                 <SelectItem value="travel-order">Travel Order System</SelectItem>
                 <SelectItem value="preventive-maintenance">Preventive Maintenance</SelectItem>
+                <SelectItem value="inventory-system">Inventory System</SelectItem>
               </SelectContent>
             </Select>
           </div>
