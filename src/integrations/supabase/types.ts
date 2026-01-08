@@ -356,7 +356,11 @@ export type Database = {
       }
       inventory_items: {
         Row: {
+          accountability_document: string | null
+          accountable_person: string | null
+          brand_model: string | null
           category_id: string | null
+          condition: string | null
           created_at: string | null
           created_by: string | null
           current_location: string | null
@@ -365,11 +369,24 @@ export type Database = {
           id: string
           name: string
           product_id: string
+          property_from: string | null
+          property_number: string | null
+          property_tag: string | null
+          quantity: number | null
+          remarks: string | null
+          serial_number: string | null
           status: string | null
+          total_cost: number | null
+          unit_cost: number | null
           updated_at: string | null
+          utilization_status: string | null
         }
         Insert: {
+          accountability_document?: string | null
+          accountable_person?: string | null
+          brand_model?: string | null
           category_id?: string | null
+          condition?: string | null
           created_at?: string | null
           created_by?: string | null
           current_location?: string | null
@@ -378,11 +395,24 @@ export type Database = {
           id?: string
           name: string
           product_id: string
+          property_from?: string | null
+          property_number?: string | null
+          property_tag?: string | null
+          quantity?: number | null
+          remarks?: string | null
+          serial_number?: string | null
           status?: string | null
+          total_cost?: number | null
+          unit_cost?: number | null
           updated_at?: string | null
+          utilization_status?: string | null
         }
         Update: {
+          accountability_document?: string | null
+          accountable_person?: string | null
+          brand_model?: string | null
           category_id?: string | null
+          condition?: string | null
           created_at?: string | null
           created_by?: string | null
           current_location?: string | null
@@ -391,8 +421,17 @@ export type Database = {
           id?: string
           name?: string
           product_id?: string
+          property_from?: string | null
+          property_number?: string | null
+          property_tag?: string | null
+          quantity?: number | null
+          remarks?: string | null
+          serial_number?: string | null
           status?: string | null
+          total_cost?: number | null
+          unit_cost?: number | null
           updated_at?: string | null
+          utilization_status?: string | null
         }
         Relationships: [
           {

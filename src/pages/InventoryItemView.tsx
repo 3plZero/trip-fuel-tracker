@@ -12,13 +12,29 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import ItemQRCode from '@/components/ItemQRCode';
-import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight, User, FileText, Tag, Hash, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 
-const statusColors: Record<string, string> = {
-  active: 'bg-green-500/10 text-green-600',
-  'in-repair': 'bg-yellow-500/10 text-yellow-600',
-  disposed: 'bg-red-500/10 text-red-600',
+const conditionColors: Record<string, string> = {
+  'Excellent Condition': 'bg-green-500/10 text-green-600',
+  'Good Condition': 'bg-blue-500/10 text-blue-600',
+  'Fair Condition': 'bg-yellow-500/10 text-yellow-600',
+  'Poor Condition': 'bg-red-500/10 text-red-600',
+};
+
+const utilizationColors: Record<string, string> = {
+  'In Use': 'bg-green-500/10 text-green-600',
+  'Idle': 'bg-gray-500/10 text-gray-600',
+  'Standby': 'bg-blue-500/10 text-blue-600',
+  'Under Repair': 'bg-yellow-500/10 text-yellow-600',
+  'For Disposal': 'bg-red-500/10 text-red-600',
+};
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-PH', {
+    style: 'currency',
+    currency: 'PHP',
+  }).format(amount);
 };
 
 export default function InventoryItemView() {
@@ -41,7 +57,6 @@ export default function InventoryItemView() {
         .single();
       if (error) {
         if (error.code === 'PGRST116') {
-          // Item not found - return null instead of throwing
           return null;
         }
         throw error;
@@ -128,7 +143,6 @@ export default function InventoryItemView() {
           <CardContent>
             {images && images.length > 0 ? (
               <div className="space-y-4">
-                {/* Main Image */}
                 <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
                   <img
                     src={images[currentImageIndex].image_url}
@@ -153,7 +167,6 @@ export default function InventoryItemView() {
                   )}
                 </div>
 
-                {/* Thumbnails */}
                 {images.length > 1 && (
                   <div className="flex gap-2 overflow-x-auto pb-2">
                     {images.map((img, index) => (
@@ -188,27 +201,49 @@ export default function InventoryItemView() {
         </Card>
 
         {/* Item Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Item Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4">
+        <div className="space-y-6">
+          {/* Basic Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Basic Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <span className="text-sm text-muted-foreground">Product ID</span>
                 <span className="font-mono font-semibold">{item.product_id}</span>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Badge className={statusColors[item.status] || 'bg-muted'}>
-                    {item.status}
+              <div className="flex flex-wrap gap-2">
+                {item.condition && (
+                  <Badge className={conditionColors[item.condition] || 'bg-muted'}>
+                    {item.condition}
                   </Badge>
-                </div>
+                )}
+                {item.utilization_status && (
+                  <Badge className={utilizationColors[item.utilization_status] || 'bg-muted'}>
+                    {item.utilization_status}
+                  </Badge>
+                )}
+                {item.property_tag === 'Tagged' && (
+                  <Badge variant="outline" className="border-primary text-primary">
+                    <Tag className="h-3 w-3 mr-1" /> Tagged
+                  </Badge>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                {item.brand_model && (
+                  <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Brand/Model:</span>
+                    <span>{item.brand_model}</span>
+                  </div>
+                )}
 
                 {item.category && (
                   <div className="flex items-center gap-2">
                     <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Category:</span>
                     <span>{item.category.name}</span>
                   </div>
                 )}
@@ -216,6 +251,7 @@ export default function InventoryItemView() {
                 {item.current_location && (
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Location:</span>
                     <span>{item.current_location}</span>
                   </div>
                 )}
@@ -223,20 +259,116 @@ export default function InventoryItemView() {
                 {item.date_received && (
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span>Received: {format(new Date(item.date_received), 'MMMM d, yyyy')}</span>
+                    <span className="text-sm text-muted-foreground">Date Received:</span>
+                    <span>{format(new Date(item.date_received), 'MMMM d, yyyy')}</span>
                   </div>
                 )}
               </div>
-            </div>
 
-            {item.description && (
-              <div className="space-y-2">
-                <h3 className="font-medium">Description</h3>
-                <p className="text-muted-foreground whitespace-pre-wrap">{item.description}</p>
+              {item.description && (
+                <div className="pt-4 border-t">
+                  <h4 className="text-sm font-medium mb-2">Specifications / Details</h4>
+                  <p className="text-muted-foreground whitespace-pre-wrap text-sm">{item.description}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Property Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Property Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {item.property_number && (
+                <div className="flex items-center gap-2">
+                  <Hash className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Property Number:</span>
+                  <span className="font-mono">{item.property_number}</span>
+                </div>
+              )}
+
+              {item.serial_number && (
+                <div className="flex items-center gap-2">
+                  <Hash className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Serial Number:</span>
+                  <span className="font-mono">{item.serial_number}</span>
+                </div>
+              )}
+
+              {item.accountability_document && (
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Document:</span>
+                  <span>{item.accountability_document}</span>
+                </div>
+              )}
+
+              {item.property_from && (
+                <div className="flex items-center gap-2">
+                  <Package className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Property From:</span>
+                  <span>{item.property_from}</span>
+                </div>
+              )}
+
+              {!item.property_number && !item.serial_number && !item.accountability_document && !item.property_from && (
+                <p className="text-muted-foreground text-sm">No property details available</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Quantity & Cost */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quantity & Cost</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <p className="text-2xl font-bold">{item.quantity || 1}</p>
+                  <p className="text-xs text-muted-foreground">Quantity</p>
+                </div>
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <p className="text-lg font-semibold">{formatCurrency(item.unit_cost || 0)}</p>
+                  <p className="text-xs text-muted-foreground">Unit Cost</p>
+                </div>
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <p className="text-lg font-semibold">{formatCurrency(item.total_cost || 0)}</p>
+                  <p className="text-xs text-muted-foreground">Total Cost</p>
+                </div>
               </div>
-            )}
+            </CardContent>
+          </Card>
 
-            <div className="pt-4 border-t">
+          {/* Accountability */}
+          {(item.accountable_person || item.remarks) && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Accountability</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {item.accountable_person && (
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Accountable Person:</span>
+                    <span className="font-medium">{item.accountable_person}</span>
+                  </div>
+                )}
+
+                {item.remarks && (
+                  <div className="pt-2 border-t">
+                    <h4 className="text-sm font-medium mb-2">Remarks</h4>
+                    <p className="text-muted-foreground whitespace-pre-wrap text-sm">{item.remarks}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Timestamps */}
+          <Card>
+            <CardContent className="pt-6">
               <p className="text-xs text-muted-foreground">
                 Created: {format(new Date(item.created_at), 'MMM d, yyyy h:mm a')}
               </p>
@@ -245,9 +377,9 @@ export default function InventoryItemView() {
                   Updated: {format(new Date(item.updated_at), 'MMM d, yyyy h:mm a')}
                 </p>
               )}
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* QR Code Dialog */}
