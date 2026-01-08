@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Plus, Search, Eye, Pencil, Trash2, Package, Filter, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -70,6 +70,7 @@ const utilizationOptions = [
 
 export default function InventoryItems() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const categoryFilter = searchParams.get('category');
   
@@ -80,6 +81,63 @@ export default function InventoryItems() {
   const [showFilters, setShowFilters] = useState(false);
   const [deleteItem, setDeleteItem] = useState<{ id: string; name: string } | null>(null);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  
+  // Barcode scanner detection
+  const barcodeBuffer = useRef('');
+  const barcodeTimeout = useRef<NodeJS.Timeout | null>(null);
+  
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input field
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      
+      if (e.key === 'Enter' && barcodeBuffer.current.length > 0) {
+        // Barcode scan complete - search for item by product_id
+        const scannedCode = barcodeBuffer.current.trim();
+        barcodeBuffer.current = '';
+        
+        // Look up item by product_id and navigate
+        supabase
+          .from('inventory_items')
+          .select('id')
+          .eq('product_id', scannedCode)
+          .single()
+          .then(({ data, error }) => {
+            if (data && !error) {
+              navigate(`/inventory-items/${data.id}`);
+              toast.success(`Opening item: ${scannedCode}`);
+            } else {
+              toast.error(`Item not found: ${scannedCode}`);
+            }
+          });
+        
+        return;
+      }
+      
+      // Only capture printable characters
+      if (e.key.length === 1) {
+        barcodeBuffer.current += e.key;
+        
+        // Clear buffer after 100ms of no input (barcode scanners input very fast)
+        if (barcodeTimeout.current) {
+          clearTimeout(barcodeTimeout.current);
+        }
+        barcodeTimeout.current = setTimeout(() => {
+          barcodeBuffer.current = '';
+        }, 100);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      if (barcodeTimeout.current) {
+        clearTimeout(barcodeTimeout.current);
+      }
+    };
+  }, [navigate]);
 
   const { data: categories } = useQuery({
     queryKey: ['inventory-categories-list'],
