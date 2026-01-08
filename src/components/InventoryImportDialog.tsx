@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Upload, FileSpreadsheet, Loader2, AlertCircle } from 'lucide-react';
+import { Upload, FileSpreadsheet, FileText, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import InventoryImportPreview from './InventoryImportPreview';
@@ -48,55 +48,83 @@ export default function InventoryImportDialog({
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
 
+  const processExcelFile = async (file: File) => {
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    
+    // Get raw data with headers
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+    
+    if (jsonData.length < 2) {
+      throw new Error('File must have at least a header row and one data row');
+    }
+
+    // First row is headers
+    const headers = jsonData[0].map((h: any) => String(h || '').trim());
+    
+    // Rest are data rows, filter out empty rows
+    const rows = jsonData.slice(1)
+      .filter(row => row.some(cell => cell !== null && cell !== undefined && cell !== ''))
+      .map(row => {
+        const rowObj: Record<string, any> = {};
+        headers.forEach((header, index) => {
+          rowObj[header] = row[index];
+        });
+        return rowObj;
+      });
+
+    if (rows.length === 0) {
+      throw new Error('No data rows found in file');
+    }
+
+    console.log(`Extracted ${rows.length} rows from Excel`);
+    return { headers, rows };
+  };
+
+  const processPdfFile = async (file: File): Promise<{ rawText: string }> => {
+    // Convert PDF to base64
+    const arrayBuffer = await file.arrayBuffer();
+    const base64 = btoa(
+      new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
+    );
+    
+    return { rawText: base64 };
+  };
+
   const processFile = async (file: File) => {
     setIsProcessing(true);
     setError(null);
     setFileName(file.name);
 
-    try {
-      const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      
-      // Get raw data with headers
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
-      
-      if (jsonData.length < 2) {
-        throw new Error('File must have at least a header row and one data row');
-      }
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
-      // First row is headers
-      const headers = jsonData[0].map((h: any) => String(h || '').trim());
+    try {
+      let result;
       
-      // Rest are data rows, filter out empty rows
-      const rows = jsonData.slice(1)
-        .filter(row => row.some(cell => cell !== null && cell !== undefined && cell !== ''))
-        .map(row => {
-          const rowObj: Record<string, any> = {};
-          headers.forEach((header, index) => {
-            rowObj[header] = row[index];
-          });
-          return rowObj;
+      if (isPdf) {
+        // Process PDF file
+        const { rawText } = await processPdfFile(file);
+        
+        const { data, error: fnError } = await supabase.functions.invoke('parse-inventory-pdf', {
+          body: { pdfBase64: rawText, categories },
         });
 
-      if (rows.length === 0) {
-        throw new Error('No data rows found in file');
-      }
+        if (fnError) throw new Error(fnError.message || 'Failed to process PDF');
+        if (data.error) throw new Error(data.error);
+        result = data;
+      } else {
+        // Process Excel/CSV file
+        const { headers, rows } = await processExcelFile(file);
 
-      console.log(`Extracted ${rows.length} rows from Excel`);
+        const { data, error: fnError } = await supabase.functions.invoke('parse-inventory-excel', {
+          body: { headers, rows, categories },
+        });
 
-      // Send to edge function for AI parsing
-      const { data: result, error: fnError } = await supabase.functions.invoke('parse-inventory-excel', {
-        body: { headers, rows, categories },
-      });
-
-      if (fnError) {
-        throw new Error(fnError.message || 'Failed to process file');
-      }
-
-      if (result.error) {
-        throw new Error(result.error);
+        if (fnError) throw new Error(fnError.message || 'Failed to process file');
+        if (data.error) throw new Error(data.error);
+        result = data;
       }
 
       if (!result.items || result.items.length === 0) {
@@ -133,6 +161,7 @@ export default function InventoryImportDialog({
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
       'application/vnd.ms-excel': ['.xls'],
       'text/csv': ['.csv'],
+      'application/pdf': ['.pdf'],
     },
     maxFiles: 1,
     disabled: isProcessing,
@@ -188,14 +217,17 @@ export default function InventoryImportDialog({
                   {isDragActive ? (
                     <Upload className="h-12 w-12 text-primary" />
                   ) : (
-                    <FileSpreadsheet className="h-12 w-12 text-muted-foreground" />
+                    <div className="flex gap-2">
+                      <FileSpreadsheet className="h-10 w-10 text-muted-foreground" />
+                      <FileText className="h-10 w-10 text-muted-foreground" />
+                    </div>
                   )}
                   <div>
                     <p className="text-lg font-medium">
-                      {isDragActive ? 'Drop your file here' : 'Drag & drop your Excel file'}
+                      {isDragActive ? 'Drop your file here' : 'Drag & drop your file'}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      or click to browse (.xlsx, .xls, .csv)
+                      Excel (.xlsx, .xls, .csv) or PDF files
                     </p>
                   </div>
                 </div>

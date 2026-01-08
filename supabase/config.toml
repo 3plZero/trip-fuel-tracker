@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.parse-inventory-excel]
 verify_jwt = false
+
+[functions.parse-inventory-pdf]
+verify_jwt = false
