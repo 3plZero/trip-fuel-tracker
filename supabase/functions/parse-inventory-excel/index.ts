@@ -13,10 +13,10 @@ serve(async (req) => {
 
   try {
     const { headers, rows, categories } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is not configured");
     }
 
     if (!headers || !rows || rows.length === 0) {
@@ -88,18 +88,23 @@ Return ONLY a valid JSON array of objects with the mapped fields. No explanation
 
     console.log("Sending request to Gemini for parsing...");
     
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
+        contents: [
+          {
+            parts: [
+              { text: systemPrompt + "\n\n" + userPrompt }
+            ]
+          }
         ],
+        generationConfig: {
+          temperature: 0.1,
+          maxOutputTokens: 8192,
+        }
       }),
     });
 
@@ -110,21 +115,16 @@ Return ONLY a valid JSON array of objects with the mapped fields. No explanation
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Payment required. Please add funds to continue." }), {
-          status: 402,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error(`AI gateway error: ${response.status}`);
+      console.error("Gemini API error:", response.status, errorText);
+      throw new Error(`Gemini API error: ${response.status}`);
     }
 
     const aiResponse = await response.json();
-    const content = aiResponse.choices?.[0]?.message?.content;
+    const content = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text;
     
     if (!content) {
+      console.error("No content in Gemini response:", JSON.stringify(aiResponse));
       throw new Error("No response from AI");
     }
 
