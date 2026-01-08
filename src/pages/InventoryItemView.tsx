@@ -14,6 +14,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ItemQRCode from '@/components/ItemQRCode';
 import ItemBarcode from '@/components/ItemBarcode';
+import InventoryStickerPrint from '@/components/InventoryStickerPrint';
 import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight, User, FileText, Tag, Hash } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -44,6 +45,7 @@ export default function InventoryItemView() {
   const navigate = useNavigate();
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [stickerSize, setStickerSize] = useState<'small' | 'medium' | 'large'>('medium');
 
   const { data: item, isLoading, error } = useQuery({
     queryKey: ['inventory-item', id],
@@ -386,15 +388,23 @@ export default function InventoryItemView() {
 
       {/* Codes Dialog */}
       <Dialog open={isQRDialogOpen} onOpenChange={setIsQRDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Item Codes</DialogTitle>
+            <DialogTitle>Item Codes & Sticker</DialogTitle>
           </DialogHeader>
-          <Tabs defaultValue="qrcode" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs defaultValue="sticker" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="sticker">Print Sticker</TabsTrigger>
               <TabsTrigger value="qrcode">QR Code</TabsTrigger>
               <TabsTrigger value="barcode">Barcode</TabsTrigger>
             </TabsList>
+            <TabsContent value="sticker" className="py-4">
+              <InventoryStickerPrint 
+                item={item} 
+                size={stickerSize} 
+                onSizeChange={setStickerSize} 
+              />
+            </TabsContent>
             <TabsContent value="qrcode" className="flex flex-col items-center py-4">
               <ItemQRCode itemId={item.id} productId={item.product_id} />
             </TabsContent>
