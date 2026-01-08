@@ -6,22 +6,26 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Retry helper with exponential backoff
+// Retry helper with exponential backoff - longer delays for Gemini free tier
 async function fetchWithRetry(
   url: string, 
   options: RequestInit, 
-  maxRetries: number = 3
+  maxRetries: number = 5
 ): Promise<Response> {
   let lastError: Error | null = null;
   
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const response = await fetch(url, options);
       
       if (response.status === 429) {
-        // Rate limited - wait and retry
-        const waitTime = Math.pow(2, attempt) * 2000; // 2s, 4s, 8s
-        console.log(`Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
+        if (attempt === maxRetries) {
+          // Return the 429 response on final attempt instead of throwing
+          return response;
+        }
+        // Rate limited - wait with longer delays (10s, 20s, 40s, 60s, 60s)
+        const waitTime = Math.min(Math.pow(2, attempt) * 10000, 60000);
+        console.log(`Rate limited, waiting ${waitTime / 1000}s before retry ${attempt + 1}/${maxRetries}`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
         continue;
       }
@@ -31,8 +35,8 @@ async function fetchWithRetry(
       lastError = error instanceof Error ? error : new Error(String(error));
       console.error(`Fetch attempt ${attempt + 1} failed:`, lastError.message);
       
-      if (attempt < maxRetries - 1) {
-        const waitTime = Math.pow(2, attempt) * 1000;
+      if (attempt < maxRetries) {
+        const waitTime = Math.pow(2, attempt) * 5000;
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     }
@@ -64,12 +68,12 @@ serve(async (req) => {
     // Clean and filter headers - remove null/empty values
     const cleanHeaders = headers.filter((h: any) => h && String(h).trim());
     
-    // Limit rows to prevent token overflow (process in chunks if needed)
-    const maxRows = 100;
+    // Limit rows to prevent token overflow - smaller batch for free tier
+    const maxRows = 30;
     const processRows = rows.slice(0, maxRows);
     
     if (rows.length > maxRows) {
-      console.log(`Warning: Processing first ${maxRows} of ${rows.length} rows`);
+      console.log(`Warning: Processing first ${maxRows} of ${rows.length} rows. Import multiple times for large files.`);
     }
 
     const systemPrompt = `You are a data parsing assistant for an inventory management system. Your task is to map Excel data to inventory item fields.
