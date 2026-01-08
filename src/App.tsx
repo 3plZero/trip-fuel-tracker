@@ -30,6 +30,11 @@ import GeneratorMaintenanceForm from "@/pages/GeneratorMaintenanceForm";
 import GeneratorMaintenanceView from "@/pages/GeneratorMaintenanceView";
 import Generators from "@/pages/Generators";
 import Buildings from "@/pages/Buildings";
+import InventoryDashboard from "@/pages/InventoryDashboard";
+import InventoryCategories from "@/pages/InventoryCategories";
+import InventoryItems from "@/pages/InventoryItems";
+import InventoryItemForm from "@/pages/InventoryItemForm";
+import InventoryItemView from "@/pages/InventoryItemView";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -84,6 +89,13 @@ function AppRoutes() {
       <Route path="/generator-maintenance/:id/edit" element={<ProtectedRoute><GeneratorMaintenanceForm /></ProtectedRoute>} />
       <Route path="/generators" element={<ProtectedRoute><Generators /></ProtectedRoute>} />
       <Route path="/buildings" element={<ProtectedRoute><Buildings /></ProtectedRoute>} />
+      {/* Inventory System Routes */}
+      <Route path="/inventory-dashboard" element={<ProtectedRoute><InventoryDashboard /></ProtectedRoute>} />
+      <Route path="/inventory-categories" element={<ProtectedRoute><InventoryCategories /></ProtectedRoute>} />
+      <Route path="/inventory-items" element={<ProtectedRoute><InventoryItems /></ProtectedRoute>} />
+      <Route path="/inventory-items/new" element={<ProtectedRoute><InventoryItemForm /></ProtectedRoute>} />
+      <Route path="/inventory-items/:id" element={<ProtectedRoute><InventoryItemView /></ProtectedRoute>} />
+      <Route path="/inventory-items/:id/edit" element={<ProtectedRoute><InventoryItemForm /></ProtectedRoute>} />
       {/* Shared Routes */}
       <Route path="/vehicles" element={<ProtectedRoute><Vehicles /></ProtectedRoute>} />
       <Route path="/drivers" element={<ProtectedRoute><Drivers /></ProtectedRoute>} />

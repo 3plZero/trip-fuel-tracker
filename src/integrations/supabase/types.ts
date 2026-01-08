@@ -295,6 +295,115 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_categories: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      inventory_item_images: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string
+          item_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url: string
+          item_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string
+          item_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_item_images_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_items: {
+        Row: {
+          category_id: string | null
+          created_at: string | null
+          created_by: string | null
+          current_location: string | null
+          date_received: string | null
+          description: string | null
+          id: string
+          name: string
+          product_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          current_location?: string | null
+          date_received?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          product_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          current_location?: string | null
+          date_received?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          product_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -881,6 +990,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_product_id: { Args: never; Returns: string }
       generate_tr_no: { Args: never; Returns: string }
       generate_travel_order_no: { Args: never; Returns: string }
       has_role: {
