@@ -36,6 +36,7 @@ const sizeConfig: Record<StickerSize, {
   details: string;
   label: string;
   qrSize: number;
+  printQrSize: number;
   barcodeWidth: number;
   barcodeHeight: number;
   dimensions: string;
@@ -48,6 +49,7 @@ const sizeConfig: Record<StickerSize, {
     details: 'text-[8px]',
     label: 'text-[7px]',
     qrSize: 120,
+    printQrSize: 300,
     barcodeWidth: 1,
     barcodeHeight: 35,
     dimensions: '3" x 2"',
@@ -60,6 +62,7 @@ const sizeConfig: Record<StickerSize, {
     details: 'text-[9px]',
     label: 'text-[8px]',
     qrSize: 150,
+    printQrSize: 350,
     barcodeWidth: 1.5,
     barcodeHeight: 45,
     dimensions: '4" x 2.5"',
@@ -72,6 +75,7 @@ const sizeConfig: Record<StickerSize, {
     details: 'text-[10px]',
     label: 'text-[9px]',
     qrSize: 180,
+    printQrSize: 400,
     barcodeWidth: 2,
     barcodeHeight: 55,
     dimensions: '5" x 3"',
@@ -86,7 +90,7 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function InventoryStickerPrint({ item, size, onSizeChange }: InventoryStickerPrintProps) {
-  const qrRef = useRef<HTMLDivElement>(null);
+  const printQrRef = useRef<HTMLDivElement>(null);
   const barcodeRef = useRef<HTMLDivElement>(null);
   const [codeType, setCodeType] = useState<CodeType>('qr');
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
@@ -95,10 +99,10 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
   const config = sizeConfig[size];
   const itemUrl = `${window.location.origin}/inventory-items/${item.id}`;
 
-  // Convert QR code canvas to data URL
+  // Convert high-res QR code canvas to data URL for printing
   useEffect(() => {
     const timer = setTimeout(() => {
-      const canvas = qrRef.current?.querySelector('canvas');
+      const canvas = printQrRef.current?.querySelector('canvas');
       if (canvas) {
         setQrDataUrl(canvas.toDataURL('image/png'));
       }
@@ -220,6 +224,8 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
             }
             .code-image {
               ${codeSize}
+              image-rendering: crisp-edges;
+              image-rendering: -webkit-optimize-contrast;
             }
           </style>
         </head>
@@ -311,14 +317,14 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
         </div>
       </div>
 
-      {/* Hidden elements for generating data URLs */}
+      {/* Hidden high-resolution QR for printing */}
       <div className="hidden">
-        <div ref={qrRef}>
+        <div ref={printQrRef}>
           <QRCodeCanvas 
             value={itemUrl}
-            size={config.qrSize}
-            level="M"
-            includeMargin={false}
+            size={config.printQrSize}
+            level="H"
+            includeMargin={true}
           />
         </div>
         <div ref={barcodeRef}>
@@ -413,8 +419,8 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
                 <QRCodeCanvas 
                   value={itemUrl}
                   size={config.qrSize}
-                  level="M"
-                  includeMargin={false}
+                  level="H"
+                  includeMargin={true}
                 />
               ) : (
                 <Barcode 
