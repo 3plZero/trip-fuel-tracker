@@ -43,41 +43,41 @@ const sizeConfig: Record<StickerSize, {
 }> = {
   small: {
     container: 'w-[3in] p-3',
-    logoSize: '24px',
-    title: 'text-sm font-bold',
-    subtitle: 'text-[9px]',
-    details: 'text-[8px]',
-    label: 'text-[7px]',
-    qrSize: 120,
-    printQrSize: 300,
-    barcodeWidth: 1,
-    barcodeHeight: 35,
-    dimensions: '3" x 2"',
-  },
-  medium: {
-    container: 'w-[4in] p-4',
-    logoSize: '30px',
+    logoSize: '28px',
     title: 'text-base font-bold',
     subtitle: 'text-[10px]',
     details: 'text-[9px]',
     label: 'text-[8px]',
-    qrSize: 150,
+    qrSize: 140,
     printQrSize: 350,
-    barcodeWidth: 1.5,
-    barcodeHeight: 45,
+    barcodeWidth: 1.2,
+    barcodeHeight: 40,
+    dimensions: '3" x 2"',
+  },
+  medium: {
+    container: 'w-[4in] p-4',
+    logoSize: '34px',
+    title: 'text-lg font-bold',
+    subtitle: 'text-[11px]',
+    details: 'text-[10px]',
+    label: 'text-[9px]',
+    qrSize: 170,
+    printQrSize: 400,
+    barcodeWidth: 1.8,
+    barcodeHeight: 50,
     dimensions: '4" x 2.5"',
   },
   large: {
     container: 'w-[5in] p-5',
-    logoSize: '36px',
-    title: 'text-lg font-bold',
-    subtitle: 'text-xs',
-    details: 'text-[10px]',
-    label: 'text-[9px]',
-    qrSize: 180,
-    printQrSize: 400,
-    barcodeWidth: 2,
-    barcodeHeight: 55,
+    logoSize: '42px',
+    title: 'text-xl font-bold',
+    subtitle: 'text-sm',
+    details: 'text-[11px]',
+    label: 'text-[10px]',
+    qrSize: 200,
+    printQrSize: 450,
+    barcodeWidth: 2.2,
+    barcodeHeight: 60,
     dimensions: '5" x 3"',
   },
 };
@@ -176,18 +176,18 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
               flex: 1;
             }
             .dept-label {
-              font-size: ${size === 'small' ? '6px' : size === 'medium' ? '7px' : '8px'};
+              font-size: ${size === 'small' ? '7px' : size === 'medium' ? '8px' : '9px'};
               color: #666;
             }
             .dept-name {
-              font-size: ${size === 'small' ? '9px' : size === 'medium' ? '10px' : '11px'};
+              font-size: ${size === 'small' ? '10px' : size === 'medium' ? '11px' : '12px'};
               font-weight: bold;
             }
             .region {
-              font-size: ${size === 'small' ? '7px' : size === 'medium' ? '8px' : '9px'};
+              font-size: ${size === 'small' ? '8px' : size === 'medium' ? '9px' : '10px'};
             }
             .tagline {
-              font-size: ${size === 'small' ? '5px' : size === 'medium' ? '6px' : '7px'};
+              font-size: ${size === 'small' ? '6px' : size === 'medium' ? '7px' : '8px'};
               font-style: italic;
               color: #666;
             }
@@ -197,21 +197,21 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
               margin-bottom: 8px;
             }
             .item-name {
-              font-size: ${size === 'small' ? '14px' : size === 'medium' ? '18px' : '22px'};
+              font-size: ${size === 'small' ? '16px' : size === 'medium' ? '20px' : '24px'};
               font-weight: bold;
               text-transform: uppercase;
               margin-bottom: 4px;
               line-height: 1.1;
             }
             .particulars {
-              font-size: ${size === 'small' ? '8px' : size === 'medium' ? '9px' : '10px'};
+              font-size: ${size === 'small' ? '9px' : size === 'medium' ? '10px' : '11px'};
               margin-bottom: 2px;
             }
             .particulars-label {
               color: #666;
             }
             .property-number {
-              font-size: ${size === 'small' ? '8px' : size === 'medium' ? '9px' : '10px'};
+              font-size: ${size === 'small' ? '9px' : size === 'medium' ? '10px' : '11px'};
             }
             .content {
               display: flex;
@@ -219,7 +219,7 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
               align-items: flex-end;
             }
             .details {
-              font-size: ${size === 'small' ? '7px' : size === 'medium' ? '8px' : '9px'};
+              font-size: ${size === 'small' ? '8px' : size === 'medium' ? '9px' : '10px'};
               line-height: 1.6;
             }
             .code-image {
@@ -362,7 +362,7 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
           {/* Item Box */}
           <div className="bg-gray-200 p-2 mb-2">
             {/* Item Name */}
-            <h2 className={`${config.title} uppercase leading-tight`} style={{ fontSize: size === 'small' ? '14px' : size === 'medium' ? '18px' : '22px' }}>
+            <h2 className={`${config.title} uppercase leading-tight`} style={{ fontSize: size === 'small' ? '16px' : size === 'medium' ? '20px' : '24px' }}>
               {item.name}
             </h2>
 
