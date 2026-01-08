@@ -6,45 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Retry helper with exponential backoff - longer delays for Gemini free tier
-async function fetchWithRetry(
-  url: string, 
-  options: RequestInit, 
-  maxRetries: number = 5
-): Promise<Response> {
-  let lastError: Error | null = null;
-  
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const response = await fetch(url, options);
-      
-      if (response.status === 429) {
-        if (attempt === maxRetries) {
-          // Return the 429 response on final attempt instead of throwing
-          return response;
-        }
-        // Rate limited - wait with longer delays (10s, 20s, 40s, 60s, 60s)
-        const waitTime = Math.min(Math.pow(2, attempt) * 10000, 60000);
-        console.log(`Rate limited, waiting ${waitTime / 1000}s before retry ${attempt + 1}/${maxRetries}`);
-        await new Promise(resolve => setTimeout(resolve, waitTime));
-        continue;
-      }
-      
-      return response;
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error));
-      console.error(`Fetch attempt ${attempt + 1} failed:`, lastError.message);
-      
-      if (attempt < maxRetries) {
-        const waitTime = Math.pow(2, attempt) * 5000;
-        await new Promise(resolve => setTimeout(resolve, waitTime));
-      }
-    }
-  }
-  
-  throw lastError || new Error('Max retries exceeded');
-}
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -52,10 +13,10 @@ serve(async (req) => {
 
   try {
     const { headers, rows, categories } = await req.json();
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
-    if (!GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
     if (!headers || !rows || rows.length === 0) {
@@ -68,8 +29,8 @@ serve(async (req) => {
     // Clean and filter headers - remove null/empty values
     const cleanHeaders = headers.filter((h: any) => h && String(h).trim());
     
-    // Limit rows to prevent token overflow - smaller batch for free tier
-    const maxRows = 30;
+    // Limit rows to prevent token overflow
+    const maxRows = 50;
     const processRows = rows.slice(0, maxRows);
     
     if (rows.length > maxRows) {
@@ -131,49 +92,36 @@ ${JSON.stringify(processRows)}
 
 Return ONLY a valid JSON array of objects with the mapped fields. No explanation, just the JSON array.`;
 
-    console.log(`Sending request to Gemini for parsing ${processRows.length} rows...`);
+    console.log(`Sending request to OpenAI for parsing ${processRows.length} rows...`);
     
-    const response = await fetchWithRetry(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: systemPrompt + "\n\n" + userPrompt }
-              ]
-            }
-          ],
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 8192,
-          }
-        }),
+    const response = await fetch('https://ai-gateway.lovable.dev/v1/chat/completions', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
       },
-      3 // max retries
-    );
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.1,
+        max_tokens: 8192,
+      }),
+    });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please wait a minute and try again." }), {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
       const errorText = await response.text();
-      console.error("Gemini API error:", response.status, errorText);
-      throw new Error(`Gemini API error: ${response.status}`);
+      console.error("OpenAI API error:", response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const aiResponse = await response.json();
-    const content = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text;
+    const content = aiResponse.choices?.[0]?.message?.content;
     
     if (!content) {
-      console.error("No content in Gemini response:", JSON.stringify(aiResponse));
+      console.error("No content in OpenAI response:", JSON.stringify(aiResponse));
       throw new Error("No response from AI");
     }
 
