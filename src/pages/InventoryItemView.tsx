@@ -11,8 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ItemQRCode from '@/components/ItemQRCode';
-import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight, User, FileText, Tag, Hash, DollarSign } from 'lucide-react';
+import ItemBarcode from '@/components/ItemBarcode';
+import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight, User, FileText, Tag, Hash } from 'lucide-react';
 import { format } from 'date-fns';
 
 const conditionColors: Record<string, string> = {
@@ -124,7 +126,7 @@ export default function InventoryItemView() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setIsQRDialogOpen(true)}>
-            <QrCode className="h-4 w-4 mr-2" /> QR Code
+            <QrCode className="h-4 w-4 mr-2" /> Codes
           </Button>
           <Link to={`/inventory-items/${id}/edit`}>
             <Button>
@@ -382,15 +384,24 @@ export default function InventoryItemView() {
         </div>
       </div>
 
-      {/* QR Code Dialog */}
+      {/* Codes Dialog */}
       <Dialog open={isQRDialogOpen} onOpenChange={setIsQRDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Item QR Code</DialogTitle>
+            <DialogTitle>Item Codes</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center py-4">
-            <ItemQRCode itemId={item.id} productId={item.product_id} />
-          </div>
+          <Tabs defaultValue="qrcode" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="qrcode">QR Code</TabsTrigger>
+              <TabsTrigger value="barcode">Barcode</TabsTrigger>
+            </TabsList>
+            <TabsContent value="qrcode" className="flex flex-col items-center py-4">
+              <ItemQRCode itemId={item.id} productId={item.product_id} />
+            </TabsContent>
+            <TabsContent value="barcode" className="flex flex-col items-center py-4">
+              <ItemBarcode value={item.product_id} productId={item.product_id} />
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
     </div>
