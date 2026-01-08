@@ -27,7 +27,7 @@ export default function InventoryItemView() {
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const { data: item, isLoading } = useQuery({
+  const { data: item, isLoading, error } = useQuery({
     queryKey: ['inventory-item', id],
     queryFn: async () => {
       if (!id) return null;
@@ -39,9 +39,16 @@ export default function InventoryItemView() {
         `)
         .eq('id', id)
         .single();
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // Item not found - return null instead of throwing
+          return null;
+        }
+        throw error;
+      }
       return data;
     },
+    retry: false,
   });
 
   const { data: images } = useQuery({
@@ -78,12 +85,14 @@ export default function InventoryItemView() {
     );
   }
 
-  if (!item) {
+  if (!item || error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Item not found</p>
-        <Button variant="link" onClick={() => navigate('/inventory-items')}>
-          Back to Items
+      <div className="flex flex-col items-center justify-center py-16">
+        <Package className="h-16 w-16 text-muted-foreground mb-4" />
+        <h2 className="text-2xl font-semibold mb-2">Item Not Found</h2>
+        <p className="text-muted-foreground mb-6">The inventory item you're looking for doesn't exist or has been removed.</p>
+        <Button onClick={() => navigate('/inventory-items')}>
+          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Items
         </Button>
       </div>
     );
