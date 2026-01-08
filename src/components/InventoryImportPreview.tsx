@@ -194,12 +194,12 @@ export default function InventoryImportPreview({
         </div>
       </div>
 
-      {/* Scrollable table */}
-      <ScrollArea className="flex-1 min-h-0">
-        <Table>
+      {/* Scrollable table - both vertical and horizontal */}
+      <div className="flex-1 min-h-0 overflow-auto border rounded-md">
+        <Table className="min-w-[1400px]">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-10">
+              <TableHead className="w-10 sticky left-0 bg-background z-10">
                 <Checkbox
                   checked={allSelected}
                   onCheckedChange={toggleSelectAll}
@@ -223,7 +223,7 @@ export default function InventoryImportPreview({
                 key={index}
                 className={item._error ? 'bg-destructive/5' : item._selected ? '' : 'opacity-50'}
               >
-                <TableCell>
+                <TableCell className="sticky left-0 bg-background z-10">
                   <Checkbox
                     checked={item._selected || false}
                     onCheckedChange={() => toggleItem(index)}
@@ -338,7 +338,7 @@ export default function InventoryImportPreview({
             ))}
           </TableBody>
         </Table>
-      </ScrollArea>
+      </div>
 
       {/* Footer actions */}
       <div className="flex items-center justify-between pt-4 border-t mt-auto">
