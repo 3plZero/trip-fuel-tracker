@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Printer } from 'lucide-react';
 import { format } from 'date-fns';
-import dostLogo from '@/assets/dost-car-logo.jpg';
+import dostLogo from '@/assets/dost-sticker-logo.png';
 
 type StickerSize = 'small' | 'medium' | 'large';
 
@@ -28,6 +28,7 @@ interface InventoryStickerPrintProps {
 
 const sizeConfig: Record<StickerSize, {
   container: string;
+  logoSize: string;
   title: string;
   subtitle: string;
   details: string;
@@ -37,6 +38,7 @@ const sizeConfig: Record<StickerSize, {
 }> = {
   small: {
     container: 'w-[3in] p-3',
+    logoSize: '24px',
     title: 'text-sm font-bold',
     subtitle: 'text-[9px]',
     details: 'text-[8px]',
@@ -46,6 +48,7 @@ const sizeConfig: Record<StickerSize, {
   },
   medium: {
     container: 'w-[4in] p-4',
+    logoSize: '30px',
     title: 'text-base font-bold',
     subtitle: 'text-[10px]',
     details: 'text-[9px]',
@@ -55,6 +58,7 @@ const sizeConfig: Record<StickerSize, {
   },
   large: {
     container: 'w-[5in] p-5',
+    logoSize: '36px',
     title: 'text-lg font-bold',
     subtitle: 'text-xs',
     details: 'text-[10px]',
@@ -83,6 +87,8 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
+    const logoSize = config.logoSize;
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -105,21 +111,18 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
             }
             .sticker {
               background: white;
-              border: 2px solid #000;
               padding: ${size === 'small' ? '12px' : size === 'medium' ? '16px' : '20px'};
               width: ${size === 'small' ? '3in' : size === 'medium' ? '4in' : '5in'};
             }
             .header {
               display: flex;
-              align-items: flex-start;
-              gap: 8px;
-              margin-bottom: 8px;
-              padding-bottom: 8px;
-              border-bottom: 1px solid #ccc;
+              align-items: center;
+              gap: 6px;
+              margin-bottom: 4px;
             }
             .logo {
-              width: ${size === 'small' ? '35px' : size === 'medium' ? '45px' : '55px'};
-              height: auto;
+              width: ${logoSize};
+              height: ${logoSize};
             }
             .header-text {
               flex: 1;
@@ -129,49 +132,51 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
               color: #666;
             }
             .dept-name {
-              font-size: ${size === 'small' ? '8px' : size === 'medium' ? '9px' : '10px'};
+              font-size: ${size === 'small' ? '9px' : size === 'medium' ? '10px' : '11px'};
               font-weight: bold;
             }
             .region {
-              font-size: ${size === 'small' ? '6px' : size === 'medium' ? '7px' : '8px'};
+              font-size: ${size === 'small' ? '7px' : size === 'medium' ? '8px' : '9px'};
             }
             .tagline {
               font-size: ${size === 'small' ? '5px' : size === 'medium' ? '6px' : '7px'};
               font-style: italic;
               color: #666;
             }
-            .content {
-              display: flex;
-              gap: 12px;
-            }
-            .info {
-              flex: 1;
+            .item-box {
+              background: #f0f0f0;
+              padding: 8px;
+              margin-bottom: 8px;
             }
             .item-name {
-              font-size: ${size === 'small' ? '12px' : size === 'medium' ? '14px' : '16px'};
+              font-size: ${size === 'small' ? '14px' : size === 'medium' ? '18px' : '22px'};
               font-weight: bold;
               text-transform: uppercase;
               margin-bottom: 4px;
-              line-height: 1.2;
+              line-height: 1.1;
             }
             .particulars {
               font-size: ${size === 'small' ? '8px' : size === 'medium' ? '9px' : '10px'};
-              margin-bottom: 4px;
+              margin-bottom: 2px;
             }
             .particulars-label {
               color: #666;
             }
             .property-number {
               font-size: ${size === 'small' ? '8px' : size === 'medium' ? '9px' : '10px'};
-              margin-bottom: 8px;
+            }
+            .content {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-end;
             }
             .details {
               font-size: ${size === 'small' ? '7px' : size === 'medium' ? '8px' : '9px'};
-              line-height: 1.5;
+              line-height: 1.6;
             }
             .qr-container {
               display: flex;
-              align-items: center;
+              align-items: flex-end;
             }
           </style>
         </head>
@@ -222,10 +227,14 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
       {/* Preview */}
       <div className="border rounded-lg p-4 bg-muted/30 overflow-auto">
         <div ref={printRef}>
-          <div className={`sticker bg-white border-2 border-black ${config.container}`}>
+          <div className={`sticker bg-white ${config.container}`}>
             {/* Header */}
-            <div className="flex items-start gap-2 mb-2 pb-2 border-b border-gray-300">
-              <img src={dostLogo} alt="DOST" className={`${size === 'small' ? 'w-[35px]' : size === 'medium' ? 'w-[45px]' : 'w-[55px]'}`} />
+            <div className="flex items-center gap-1.5 mb-1">
+              <img 
+                src={dostLogo} 
+                alt="DOST" 
+                style={{ width: config.logoSize, height: config.logoSize }}
+              />
               <div className="flex-1">
                 <p className={config.label} style={{ color: '#666' }}>Republic of the Philippines</p>
                 <p className={`${config.subtitle} font-bold`}>DEPARTMENT OF SCIENCE AND TECHNOLOGY</p>
@@ -234,61 +243,62 @@ export default function InventoryStickerPrint({ item, size, onSizeChange }: Inve
               </div>
             </div>
 
-            {/* Content */}
-            <div className="flex gap-3">
-              <div className="flex-1">
-                {/* Item Name */}
-                <h2 className={`${config.title} uppercase leading-tight mb-1`}>
-                  {item.name}
-                </h2>
+            {/* Item Box */}
+            <div className="bg-gray-200 p-2 mb-2">
+              {/* Item Name */}
+              <h2 className={`${config.title} uppercase leading-tight`} style={{ fontSize: size === 'small' ? '14px' : size === 'medium' ? '18px' : '22px' }}>
+                {item.name}
+              </h2>
 
-                {/* Particulars */}
-                {particulars && (
-                  <p className={config.subtitle}>
-                    <span className="text-muted-foreground">Particulars (Brand, Model, Serial Number): </span>
-                    <span className="font-semibold">{particulars}</span>
+              {/* Particulars */}
+              {particulars && (
+                <p className={config.subtitle}>
+                  <span style={{ color: '#666' }}>Particulars (Brand, Model, Serial Number): </span>
+                  <span className="font-semibold">{particulars}</span>
+                </p>
+              )}
+
+              {/* Property Number */}
+              {item.property_number && (
+                <p className={config.subtitle}>
+                  <span style={{ color: '#666' }}>Property Number: </span>
+                  <span className="font-semibold">{item.property_number}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Content - Details and QR */}
+            <div className="flex justify-between items-end">
+              {/* Details */}
+              <div className={`${config.details} space-y-0.5`}>
+                {item.date_received && (
+                  <p>
+                    <span style={{ color: '#666' }}>Date Acquired: </span>
+                    {format(new Date(item.date_received), 'MMMM d, yyyy')}
                   </p>
                 )}
-
-                {/* Property Number */}
-                {item.property_number && (
-                  <p className={config.subtitle}>
-                    <span className="text-muted-foreground">Property Number: </span>
-                    <span className="font-semibold">{item.property_number}</span>
+                {item.total_cost && (
+                  <p>
+                    <span style={{ color: '#666' }}>Acquisition Cost: </span>
+                    {formatCurrency(item.total_cost)}
                   </p>
                 )}
-
-                {/* Details */}
-                <div className={`${config.details} mt-2 space-y-0.5`}>
-                  {item.date_received && (
-                    <p>
-                      <span className="text-muted-foreground">Date Acquired: </span>
-                      {format(new Date(item.date_received), 'MMMM d, yyyy')}
-                    </p>
-                  )}
-                  {item.total_cost && (
-                    <p>
-                      <span className="text-muted-foreground">Acquisition Cost: </span>
-                      {formatCurrency(item.total_cost)}
-                    </p>
-                  )}
-                  {item.accountable_person && (
-                    <p>
-                      <span className="text-muted-foreground">Issued to: </span>
-                      {item.accountable_person}
-                    </p>
-                  )}
-                  {item.created_at && (
-                    <p>
-                      <span className="text-muted-foreground">Date issued: </span>
-                      {format(new Date(item.created_at), 'MMMM d, yyyy')}
-                    </p>
-                  )}
-                </div>
+                {item.accountable_person && (
+                  <p>
+                    <span style={{ color: '#666' }}>Issued to: </span>
+                    {item.accountable_person}
+                  </p>
+                )}
+                {item.created_at && (
+                  <p>
+                    <span style={{ color: '#666' }}>Date issued: </span>
+                    {format(new Date(item.created_at), 'MMMM d, yyyy')}
+                  </p>
+                )}
               </div>
 
               {/* QR Code */}
-              <div className="flex items-center">
+              <div>
                 <QRCodeCanvas 
                   value={itemUrl}
                   size={config.qrSize}
