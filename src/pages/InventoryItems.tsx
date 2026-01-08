@@ -31,9 +31,10 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Plus, Search, Eye, Pencil, Trash2, Package, Filter } from 'lucide-react';
+import { Plus, Search, Eye, Pencil, Trash2, Package, Filter, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import InventoryImportDialog from '@/components/InventoryImportDialog';
 
 const conditionColors: Record<string, string> = {
   'Excellent Condition': 'bg-green-500/10 text-green-600',
@@ -78,6 +79,7 @@ export default function InventoryItems() {
   const [selectedUtilization, setSelectedUtilization] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [deleteItem, setDeleteItem] = useState<{ id: string; name: string } | null>(null);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
 
   const { data: categories } = useQuery({
     queryKey: ['inventory-categories-list'],
@@ -159,11 +161,16 @@ export default function InventoryItems() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-3xl font-bold">Inventory Items</h1>
-        <Link to="/inventory-items/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" /> Add Item
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
+            <Upload className="h-4 w-4 mr-2" /> Import
           </Button>
-        </Link>
+          <Link to="/inventory-items/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" /> Add Item
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
@@ -352,6 +359,16 @@ export default function InventoryItems() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Import Dialog */}
+      <InventoryImportDialog
+        open={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
+        categories={categories || []}
+        onImportComplete={() => {
+          queryClient.invalidateQueries({ queryKey: ['inventory-items'] });
+        }}
+      />
     </div>
   );
 }

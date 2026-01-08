@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.extract-vehicle-info]
 verify_jwt = false
+
+[functions.parse-inventory-excel]
+verify_jwt = false
