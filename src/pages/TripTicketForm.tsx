@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ArrowLeft, Loader2, Plus, Trash2, MapPin } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import LocationPicker from '@/components/LocationPicker';
@@ -394,7 +395,7 @@ export default function TripTicketForm() {
   if (loading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }

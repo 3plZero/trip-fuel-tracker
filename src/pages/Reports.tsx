@@ -18,6 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Loader2, Printer, FileText, Car, ArrowLeft, Fuel, TrendingUp } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import {
   ChartContainer,
@@ -254,7 +255,7 @@ export default function Reports() {
   if (loading && vehicles.length === 0) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
@@ -284,7 +285,7 @@ export default function Reports() {
 
         {loading ? (
           <div className="flex h-[40vh] items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <LoadingSpinner size="lg" />
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

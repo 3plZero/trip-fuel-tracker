@@ -16,6 +16,7 @@ import ItemQRCode from '@/components/ItemQRCode';
 import ItemBarcode from '@/components/ItemBarcode';
 import InventoryStickerPrint from '@/components/InventoryStickerPrint';
 import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight, User, FileText, Tag, Hash } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { format } from 'date-fns';
 
 const conditionColors: Record<string, string> = {
@@ -99,7 +100,7 @@ export default function InventoryItemView() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }

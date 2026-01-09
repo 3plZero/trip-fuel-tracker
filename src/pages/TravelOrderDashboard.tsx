@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus, Plane, Users, Calendar, FileCheck, Loader2, Eye, Pencil, Trash2 } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useToast } from '@/hooks/use-toast';
@@ -202,7 +203,7 @@ export default function TravelOrderDashboard() {
   if (loading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }

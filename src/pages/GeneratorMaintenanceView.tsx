@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -44,7 +45,11 @@ export default function GeneratorMaintenanceView() {
   });
 
   if (isLoading) {
-    return <div className="flex items-center justify-center py-8">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
   if (!checklist) {
