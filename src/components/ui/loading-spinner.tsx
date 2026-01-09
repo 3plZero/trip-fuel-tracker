@@ -6,29 +6,27 @@ interface LoadingSpinnerProps {
 }
 
 const sizeClasses = {
-  sm: "h-4 w-0.5",
-  md: "h-8 w-1",
-  lg: "h-12 w-1.5",
-};
-
-const containerSizeClasses = {
-  sm: "gap-0.5",
-  md: "gap-1",
-  lg: "gap-1.5",
+  sm: { dot: "h-2 w-2", gap: "gap-1" },
+  md: { dot: "h-4 w-4", gap: "gap-2" },
+  lg: { dot: "h-5 w-5", gap: "gap-2.5" },
 };
 
 export const LoadingSpinner = ({ className, size = "md" }: LoadingSpinnerProps) => {
+  const config = sizeClasses[size];
+  
   return (
-    <div className={cn("flex items-center justify-center", containerSizeClasses[size], className)}>
+    <div className={cn("flex items-center justify-center", config.gap, className)}>
       {[0, 1, 2, 3, 4].map((index) => (
         <span
           key={index}
           className={cn(
-            "bg-primary rounded-sm animate-loading-bar",
-            sizeClasses[size]
+            "rounded-full animate-loading-dot",
+            config.dot,
+            // First 3 dots are dark, last 2 are primary (DOST blue)
+            index < 3 ? "bg-foreground" : "bg-primary"
           )}
           style={{
-            animationDelay: `${index * 0.1}s`,
+            animationDelay: `${(index + 1) * 0.1}s`,
           }}
         />
       ))}
