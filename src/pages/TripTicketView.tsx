@@ -13,6 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ArrowLeft, Loader2, Printer, Pencil } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import TripTicketPrintLayout from '@/components/TripTicketPrintLayout';
@@ -125,7 +126,7 @@ export default function TripTicketView() {
   if (loading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }

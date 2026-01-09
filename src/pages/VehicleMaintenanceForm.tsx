@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -314,7 +315,11 @@ export default function VehicleMaintenanceForm() {
   };
 
   if (isEditing && isLoadingChecklist) {
-    return <div className="flex items-center justify-center py-8">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
   return (

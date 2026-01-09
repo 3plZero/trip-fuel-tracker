@@ -31,6 +31,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Plus, FileText, Eye, Pencil, Trash2, Loader2, Search, Plane } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -142,7 +143,7 @@ export default function TravelOrders() {
   if (loading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
