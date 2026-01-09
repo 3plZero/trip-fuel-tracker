@@ -3,10 +3,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Plane, Wrench, Package, Settings, User } from 'lucide-react';
+import { FileText, Plane, Wrench, Package, Settings, User, LogOut, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/dost-car-logo-new.png';
 
 const systems = [
   {
@@ -15,7 +15,8 @@ const systems = [
     description: 'Manage trip tickets, fuel consumption, and vehicle tracking',
     icon: FileText,
     href: '/fuel-dashboard',
-    color: 'bg-blue-500',
+    gradient: 'from-cyan-500 to-blue-600',
+    delay: '0ms',
   },
   {
     id: 'travel-order',
@@ -23,7 +24,8 @@ const systems = [
     description: 'Create and manage travel orders and itineraries',
     icon: Plane,
     href: '/travel-order-dashboard',
-    color: 'bg-emerald-500',
+    gradient: 'from-emerald-500 to-teal-600',
+    delay: '100ms',
   },
   {
     id: 'preventive-maintenance',
@@ -31,7 +33,8 @@ const systems = [
     description: 'Track maintenance schedules for vehicles, buildings, and generators',
     icon: Wrench,
     href: '/maintenance-dashboard',
-    color: 'bg-amber-500',
+    gradient: 'from-amber-500 to-orange-600',
+    delay: '200ms',
   },
   {
     id: 'inventory-system',
@@ -39,7 +42,8 @@ const systems = [
     description: 'Manage inventory items, categories, and stock levels',
     icon: Package,
     href: '/inventory-dashboard',
-    color: 'bg-purple-500',
+    gradient: 'from-violet-500 to-purple-600',
+    delay: '300ms',
   },
 ];
 
@@ -77,66 +81,129 @@ export default function Home() {
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'User';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse-soft" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '1s' }} />
+        <div className="absolute -bottom-40 right-1/3 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '2s' }} />
+      </div>
+
       {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
+      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-md">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="DOST Logo" className="h-12 w-12 rounded-lg" />
+            <div className="flex items-center gap-4 animate-fade-in">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-cyan-400 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-500" />
+                <img 
+                  src={logo} 
+                  alt="DOST-CAR Logo" 
+                  className="relative h-12 w-12 rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-105" 
+                />
+              </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">DOST-CAR</h1>
-                <p className="text-sm text-muted-foreground">Management System</p>
+                <h1 className="text-xl font-bold text-foreground tracking-tight">DOST-CAR</h1>
+                <p className="text-xs text-muted-foreground">Management System</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
-                <User className="h-4 w-4 mr-2" />
-                Profile
+            <nav className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: '100ms' }}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => navigate('/profile')}
+                className="gap-2 hover:bg-primary/10 transition-all duration-300"
+              >
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">Profile</span>
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/settings')}>
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => navigate('/settings')}
+                className="gap-2 hover:bg-primary/10 transition-all duration-300"
+              >
+                <Settings className="h-4 w-4" />
+                <span className="hidden sm:inline">Settings</span>
               </Button>
-              <Button variant="outline" size="sm" onClick={signOut}>
-                Sign Out
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={signOut}
+                className="gap-2 hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-all duration-300"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Sign Out</span>
               </Button>
-            </div>
+            </nav>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground">
-            Welcome, {displayName}!
+      <main className="container mx-auto px-4 py-12 relative z-10">
+        {/* Hero Section */}
+        <div className="text-center mb-16 animate-fade-in-up">
+          <div className="inline-block mb-6">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-primary/20 rounded-full blur-2xl animate-pulse-soft" />
+              <img 
+                src={logo} 
+                alt="DOST-CAR Logo" 
+                className="relative w-24 h-24 mx-auto animate-float" 
+              />
+            </div>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Welcome back, <span className="text-primary">{displayName}</span>!
           </h2>
-          <p className="text-muted-foreground mt-1">
-            Select a system to get started
+          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+            Select a system below to get started with your work
           </p>
         </div>
 
         {/* System Cards Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {systems.map((system) => (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
+          {systems.map((system, index) => (
             <Card
               key={system.id}
-              className="cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 hover:border-primary/50"
+              className="group cursor-pointer relative overflow-hidden border-0 bg-card shadow-lg hover:shadow-2xl transition-all duration-500 animate-fade-in-up"
+              style={{ animationDelay: system.delay }}
               onClick={() => navigate(system.href)}
             >
-              <CardHeader className="pb-3">
-                <div className={`w-12 h-12 rounded-lg ${system.color} flex items-center justify-center mb-3`}>
-                  <system.icon className="h-6 w-6 text-white" />
+              {/* Gradient overlay on hover */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${system.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+              
+              {/* Animated border */}
+              <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${system.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-sm`} />
+              <div className="absolute inset-[1px] rounded-xl bg-card z-0" />
+              
+              <CardHeader className="relative z-10 pb-2">
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${system.gradient} flex items-center justify-center mb-4 shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                  <system.icon className="h-7 w-7 text-white" />
                 </div>
-                <CardTitle className="text-lg">{system.name}</CardTitle>
+                <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors duration-300">
+                  {system.name}
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <CardDescription>{system.description}</CardDescription>
+              <CardContent className="relative z-10">
+                <CardDescription className="text-sm leading-relaxed mb-4">
+                  {system.description}
+                </CardDescription>
+                <div className="flex items-center text-primary font-medium text-sm opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
+                  Open System
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Footer Stats */}
+        <div className="mt-16 text-center animate-fade-in" style={{ animationDelay: '500ms' }}>
+          <p className="text-sm text-muted-foreground">
+            Department of Science and Technology - Cordillera Administrative Region
+          </p>
         </div>
       </main>
     </div>
