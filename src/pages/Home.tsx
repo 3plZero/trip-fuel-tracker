@@ -140,28 +140,45 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Dark Hero Section */}
+      <section className="relative bg-sidebar text-sidebar-foreground py-16 overflow-hidden">
+        {/* Dark section decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" />
+          <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '1.5s' }} />
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center animate-fade-in-up">
+            <div className="inline-block mb-6">
+              <div className="relative">
+                <div className="absolute -inset-6 bg-gradient-to-r from-primary/30 via-cyan-400/30 to-primary/30 rounded-full blur-2xl animate-pulse-soft" />
+                <img 
+                  src={logo} 
+                  alt="DOST-CAR Logo" 
+                  className="relative w-28 h-28 mx-auto animate-float drop-shadow-2xl" 
+                />
+              </div>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Welcome back, <span className="text-primary">{displayName}</span>!
+            </h2>
+            <p className="text-lg text-sidebar-foreground/70 max-w-md mx-auto">
+              Select a system below to get started with your work
+            </p>
+          </div>
+        </div>
+        
+        {/* Wave divider */}
+        <div className="absolute bottom-0 left-0 right-0 overflow-hidden">
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-12 fill-background">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.1,118.92,156.63,69.08,321.39,56.44Z" />
+          </svg>
+        </div>
+      </section>
+
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12 relative z-10">
-        {/* Hero Section */}
-        <div className="text-center mb-16 animate-fade-in-up">
-          <div className="inline-block mb-6">
-            <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-primary/20 rounded-full blur-2xl animate-pulse-soft" />
-              <img 
-                src={logo} 
-                alt="DOST-CAR Logo" 
-                className="relative w-24 h-24 mx-auto animate-float" 
-              />
-            </div>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Welcome back, <span className="text-primary">{displayName}</span>!
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-md mx-auto">
-            Select a system below to get started with your work
-          </p>
-        </div>
-
         {/* System Cards Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
           {systems.map((system, index) => (
@@ -198,14 +215,31 @@ export default function Home() {
             </Card>
           ))}
         </div>
+      </main>
 
-        {/* Footer Stats */}
-        <div className="mt-16 text-center animate-fade-in" style={{ animationDelay: '500ms' }}>
-          <p className="text-sm text-muted-foreground">
+      {/* Dark Footer Section */}
+      <footer className="relative bg-sidebar text-sidebar-foreground py-12 mt-8">
+        {/* Wave divider at top */}
+        <div className="absolute top-0 left-0 right-0 overflow-hidden rotate-180">
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-8 fill-background">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.1,118.92,156.63,69.08,321.39,56.44Z" />
+          </svg>
+        </div>
+        
+        <div className="container mx-auto px-4 text-center relative z-10 animate-fade-in" style={{ animationDelay: '500ms' }}>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <img src={logo} alt="DOST-CAR" className="h-10 w-10 opacity-80" />
+            <div className="h-8 w-px bg-sidebar-foreground/20" />
+            <span className="text-lg font-semibold text-primary">DOST-CAR</span>
+          </div>
+          <p className="text-sm text-sidebar-foreground/60">
             Department of Science and Technology - Cordillera Administrative Region
           </p>
+          <p className="text-xs text-sidebar-foreground/40 mt-2">
+            © 2026 All Rights Reserved
+          </p>
         </div>
-      </main>
+      </footer>
     </div>
   );
 }
