@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,6 +24,9 @@ import {
   Zap,
   Package,
   FolderOpen,
+  Home,
+  User,
+  Settings,
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { cn } from '@/lib/utils';
@@ -35,7 +38,7 @@ interface AppLayoutProps {
 type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance' | 'inventory-system';
 
 const fuelReportNavigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/fuel-dashboard', icon: LayoutDashboard },
   { name: 'Trip Tickets', href: '/trip-tickets', icon: FileText },
   { name: 'Vehicles', href: '/vehicles', icon: Car },
   { name: 'Drivers', href: '/drivers', icon: Users },
@@ -70,8 +73,16 @@ const systemLabels = {
 export default function AppLayout({ children }: AppLayoutProps) {
   const { signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentSystem, setCurrentSystem] = useState<SystemType>('fuel-report');
+  const [currentSystem, setCurrentSystem] = useState<SystemType>(() => {
+    // Determine initial system based on current path
+    const path = location.pathname;
+    if (path.includes('travel-order')) return 'travel-order';
+    if (path.includes('maintenance') || path.includes('generator') || path.includes('building')) return 'preventive-maintenance';
+    if (path.includes('inventory')) return 'inventory-system';
+    return 'fuel-report';
+  });
 
   const navigation = currentSystem === 'fuel-report' 
     ? fuelReportNavigation 
@@ -116,6 +127,18 @@ export default function AppLayout({ children }: AppLayoutProps) {
             </Button>
           </div>
 
+          {/* Back to Home */}
+          <div className="border-b border-sidebar-border p-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              onClick={() => navigate('/')}
+            >
+              <Home className="h-4 w-4" />
+              Back to Home
+            </Button>
+          </div>
+
           {/* System Selector */}
           <div className="border-b border-sidebar-border p-4">
             <Select value={currentSystem} onValueChange={(value: SystemType) => setCurrentSystem(value)}>
@@ -153,6 +176,26 @@ export default function AppLayout({ children }: AppLayoutProps) {
               );
             })}
           </nav>
+
+          {/* Profile & Settings */}
+          <div className="border-t border-sidebar-border p-2 space-y-1">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              onClick={() => navigate('/profile')}
+            >
+              <User className="h-5 w-5" />
+              Profile
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              onClick={() => navigate('/settings')}
+            >
+              <Settings className="h-5 w-5" />
+              Settings
+            </Button>
+          </div>
 
           {/* Sign out */}
           <div className="border-t border-sidebar-border p-4">
