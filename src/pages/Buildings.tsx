@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -198,8 +199,10 @@ export default function Buildings() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
-                  Loading...
+                <TableCell colSpan={5} className="py-12">
+                  <div className="flex items-center justify-center">
+                    <LoadingSpinner size="lg" />
+                  </div>
                 </TableCell>
               </TableRow>
             ) : filteredBuildings && filteredBuildings.length > 0 ? (
