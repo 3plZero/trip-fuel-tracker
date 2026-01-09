@@ -72,7 +72,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-sidebar">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -81,16 +81,16 @@ export default function Home() {
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'User';
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-sidebar relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse-soft" />
-        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '1s' }} />
-        <div className="absolute -bottom-40 right-1/3 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '2s' }} />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '1s' }} />
+        <div className="absolute -bottom-40 right-1/3 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '2s' }} />
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-sidebar-border bg-sidebar/90 backdrop-blur-md">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 animate-fade-in">
@@ -103,8 +103,8 @@ export default function Home() {
                 />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground tracking-tight">DOST-CAR</h1>
-                <p className="text-xs text-muted-foreground">Management System</p>
+                <h1 className="text-xl font-bold text-sidebar-foreground tracking-tight">DOST-CAR</h1>
+                <p className="text-xs text-sidebar-foreground/60">Management System</p>
               </div>
             </div>
             <nav className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: '100ms' }}>
@@ -112,7 +112,7 @@ export default function Home() {
                 variant="ghost" 
                 size="sm" 
                 onClick={() => navigate('/profile')}
-                className="gap-2 hover:bg-primary/10 transition-all duration-300"
+                className="gap-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-300"
               >
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">Profile</span>
@@ -121,7 +121,7 @@ export default function Home() {
                 variant="ghost" 
                 size="sm" 
                 onClick={() => navigate('/settings')}
-                className="gap-2 hover:bg-primary/10 transition-all duration-300"
+                className="gap-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-300"
               >
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">Settings</span>
@@ -130,7 +130,7 @@ export default function Home() {
                 variant="outline" 
                 size="sm" 
                 onClick={signOut}
-                className="gap-2 hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-all duration-300"
+                className="gap-2 border-sidebar-border text-sidebar-foreground hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-all duration-300"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Sign Out</span>
@@ -154,10 +154,10 @@ export default function Home() {
               />
             </div>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-sidebar-foreground mb-4">
             Welcome back, <span className="text-primary">{displayName}</span>!
           </h2>
-          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+          <p className="text-lg text-sidebar-foreground/60 max-w-md mx-auto">
             Select a system below to get started with your work
           </p>
         </div>
@@ -167,27 +167,27 @@ export default function Home() {
           {systems.map((system, index) => (
             <Card
               key={system.id}
-              className="group cursor-pointer relative overflow-hidden border-0 bg-card shadow-lg hover:shadow-2xl transition-all duration-500 animate-fade-in-up"
+              className="group cursor-pointer relative overflow-hidden border-0 bg-sidebar-accent shadow-lg hover:shadow-2xl transition-all duration-500 animate-fade-in-up"
               style={{ animationDelay: system.delay }}
               onClick={() => navigate(system.href)}
             >
               {/* Gradient overlay on hover */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${system.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+              <div className={`absolute inset-0 bg-gradient-to-br ${system.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
               
               {/* Animated border */}
               <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${system.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-sm`} />
-              <div className="absolute inset-[1px] rounded-xl bg-card z-0" />
+              <div className="absolute inset-[1px] rounded-xl bg-sidebar-accent z-0" />
               
               <CardHeader className="relative z-10 pb-2">
                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${system.gradient} flex items-center justify-center mb-4 shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
                   <system.icon className="h-7 w-7 text-white" />
                 </div>
-                <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors duration-300">
+                <CardTitle className="text-lg font-semibold text-sidebar-foreground group-hover:text-primary transition-colors duration-300">
                   {system.name}
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
-                <CardDescription className="text-sm leading-relaxed mb-4">
+                <CardDescription className="text-sm leading-relaxed mb-4 text-sidebar-foreground/60">
                   {system.description}
                 </CardDescription>
                 <div className="flex items-center text-primary font-medium text-sm opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
@@ -201,7 +201,7 @@ export default function Home() {
 
         {/* Footer Stats */}
         <div className="mt-16 text-center animate-fade-in" style={{ animationDelay: '500ms' }}>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-sidebar-foreground/50">
             Department of Science and Technology - Cordillera Administrative Region
           </p>
         </div>
