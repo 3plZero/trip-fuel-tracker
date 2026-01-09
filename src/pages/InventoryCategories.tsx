@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -157,7 +158,9 @@ export default function InventoryCategories() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-8">Loading...</div>
+        <div className="flex items-center justify-center py-12">
+          <LoadingSpinner size="lg" />
+        </div>
       ) : categories && categories.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => (
