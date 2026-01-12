@@ -12,7 +12,8 @@ interface ItemQRCodeProps {
 export default function ItemQRCode({ itemId, productId, size = 200 }: ItemQRCodeProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   
-  const itemUrl = `${window.location.origin}/inventory-items/${itemId}`;
+  // Point to the public scan page instead of the protected item view
+  const itemUrl = `${window.location.origin}/scan/${itemId}`;
 
   const handleDownload = () => {
     const canvas = canvasRef.current?.querySelector('canvas');

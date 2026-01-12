@@ -17,7 +17,8 @@ import ItemBarcode from '@/components/ItemBarcode';
 import InventoryStickerPrint from '@/components/InventoryStickerPrint';
 import ItemLocationPicker from '@/components/ItemLocationPicker';
 import ItemLocationViewer from '@/components/ItemLocationViewer';
-import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight, User, FileText, Tag, Hash, Map } from 'lucide-react';
+import ScanLogViewer from '@/components/ScanLogViewer';
+import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight, User, FileText, Tag, Hash, Map, History } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -424,6 +425,19 @@ export default function InventoryItemView() {
               </CardContent>
             </Card>
           )}
+
+          {/* Scan History */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <History className="h-5 w-5" />
+                Scan History
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScanLogViewer itemId={item.id} itemName={item.name} />
+            </CardContent>
+          </Card>
 
           {/* Timestamps */}
           <Card>
