@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet default marker icon issue with CDN URLs
 const DefaultIcon = L.icon({
