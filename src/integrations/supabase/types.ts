@@ -452,6 +452,50 @@ export type Database = {
           },
         ]
       }
+      inventory_scan_logs: {
+        Row: {
+          id: string
+          ip_address: string | null
+          item_id: string
+          location_accuracy: number | null
+          location_lat: number | null
+          location_lng: number | null
+          location_name: string | null
+          scanned_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          ip_address?: string | null
+          item_id: string
+          location_accuracy?: number | null
+          location_lat?: number | null
+          location_lng?: number | null
+          location_name?: string | null
+          scanned_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          ip_address?: string | null
+          item_id?: string
+          location_accuracy?: number | null
+          location_lat?: number | null
+          location_lng?: number | null
+          location_name?: string | null
+          scanned_at?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_scan_logs_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
