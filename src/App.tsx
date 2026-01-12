@@ -38,6 +38,7 @@ import InventoryCategories from "@/pages/InventoryCategories";
 import InventoryItems from "@/pages/InventoryItems";
 import InventoryItemForm from "@/pages/InventoryItemForm";
 import InventoryItemView from "@/pages/InventoryItemView";
+import ItemScan from "@/pages/ItemScan";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const queryClient = new QueryClient();
@@ -82,6 +83,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/auth" element={<Auth />} />
+      {/* Public route for QR scan - no auth required */}
+      <Route path="/scan/:id" element={<ItemScan />} />
       {/* Main Landing Page */}
       <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
