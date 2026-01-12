@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -36,49 +36,83 @@ export default function ItemLocationViewer({
   location,
   itemName,
 }: ItemLocationViewerProps) {
-  const mapRef = useRef<HTMLDivElement>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const [mapKey, setMapKey] = useState(0);
+
+  // Reset map key when dialog opens to force fresh render
+  useEffect(() => {
+    if (open) {
+      setMapKey(prev => prev + 1);
+    }
+  }, [open]);
 
   useEffect(() => {
-    if (!open || !mapRef.current) return;
+    if (!open) {
+      // Clean up map when dialog closes
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+      return;
+    }
 
-    // Small delay to ensure the dialog is fully rendered
-    const timer = setTimeout(() => {
-      if (!mapRef.current || mapInstanceRef.current) return;
+    // Wait for the container to be in the DOM
+    const initMap = () => {
+      if (!mapContainerRef.current) return;
+      
+      // Clean up any existing map first
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
 
-      // Initialize map
-      const map = L.map(mapRef.current).setView(
-        [location.lat, location.lng],
-        15
-      );
+      try {
+        // Initialize map
+        const map = L.map(mapContainerRef.current, {
+          center: [location.lat, location.lng],
+          zoom: 15,
+        });
 
-      // Add tile layer
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
 
-      // Add marker
-      L.marker([location.lat, location.lng], { icon: DefaultIcon })
-        .addTo(map)
-        .bindPopup(itemName || 'Item Location')
-        .openPopup();
+        // Add marker
+        L.marker([location.lat, location.lng], { icon: DefaultIcon })
+          .addTo(map)
+          .bindPopup(itemName || 'Item Location')
+          .openPopup();
 
-      mapInstanceRef.current = map;
+        mapInstanceRef.current = map;
 
-      // Force a resize after initialization
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 100);
-    }, 100);
+        // Force resize after a short delay to ensure proper tile loading
+        setTimeout(() => {
+          map.invalidateSize();
+        }, 200);
+      } catch (error) {
+        console.error('Error initializing map:', error);
+      }
+    };
+
+    // Delay initialization to ensure dialog content is rendered
+    const timer = setTimeout(initMap, 150);
 
     return () => {
       clearTimeout(timer);
+    };
+  }, [open, location.lat, location.lng, itemName, mapKey]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, [open, location.lat, location.lng, itemName]);
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -93,8 +127,13 @@ export default function ItemLocationViewer({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="h-[400px] w-full rounded-md overflow-hidden border">
-          <div ref={mapRef} className="h-full w-full" style={{ minHeight: '400px' }} />
+        <div className="h-[400px] w-full rounded-md overflow-hidden border bg-muted">
+          <div 
+            key={mapKey}
+            ref={mapContainerRef} 
+            className="h-full w-full" 
+            style={{ minHeight: '400px', zIndex: 0 }} 
+          />
         </div>
 
         <div className="text-sm text-muted-foreground">
