@@ -367,6 +367,9 @@ export type Database = {
           date_received: string | null
           description: string | null
           id: string
+          location_lat: number | null
+          location_lng: number | null
+          location_updated_at: string | null
           name: string
           product_id: string
           property_from: string | null
@@ -393,6 +396,9 @@ export type Database = {
           date_received?: string | null
           description?: string | null
           id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          location_updated_at?: string | null
           name: string
           product_id: string
           property_from?: string | null
@@ -419,6 +425,9 @@ export type Database = {
           date_received?: string | null
           description?: string | null
           id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          location_updated_at?: string | null
           name?: string
           product_id?: string
           property_from?: string | null

@@ -15,9 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Upload, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, Upload, X, Loader2, MapPin } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { toast } from 'sonner';
+import ItemLocationPicker from '@/components/ItemLocationPicker';
 
 interface FormData {
   name: string;
@@ -108,6 +109,11 @@ export default function InventoryItemForm() {
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Location state
+  const [locationLat, setLocationLat] = useState<number | null>(null);
+  const [locationLng, setLocationLng] = useState<number | null>(null);
+  const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
+
   const { data: categories } = useQuery({
     queryKey: ['inventory-categories-list'],
     queryFn: async () => {
@@ -173,6 +179,11 @@ export default function InventoryItemForm() {
         accountability_document: item.accountability_document || '',
         property_from: item.property_from || '',
       });
+      // Set location coordinates if available
+      if (item.location_lat && item.location_lng) {
+        setLocationLat(Number(item.location_lat));
+        setLocationLng(Number(item.location_lng));
+      }
     }
   }, [item]);
 
@@ -221,6 +232,9 @@ export default function InventoryItemForm() {
           accountability_document: formData.accountability_document || null,
           property_from: formData.property_from || null,
           created_by: user?.id,
+          location_lat: locationLat,
+          location_lng: locationLng,
+          location_updated_at: locationLat && locationLng ? new Date().toISOString() : null,
         })
         .select()
         .single();
@@ -290,6 +304,9 @@ export default function InventoryItemForm() {
           remarks: formData.remarks || null,
           accountability_document: formData.accountability_document || null,
           property_from: formData.property_from || null,
+          location_lat: locationLat,
+          location_lng: locationLng,
+          location_updated_at: locationLat && locationLng ? new Date().toISOString() : null,
         })
         .eq('id', id);
 
@@ -584,12 +601,29 @@ export default function InventoryItemForm() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="current_location">Current Location</Label>
-                <Input
-                  id="current_location"
-                  value={formData.current_location}
-                  onChange={(e) => setFormData({ ...formData, current_location: e.target.value })}
-                  placeholder="e.g., MIS Office"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="current_location"
+                    value={formData.current_location}
+                    onChange={(e) => setFormData({ ...formData, current_location: e.target.value })}
+                    placeholder="e.g., MIS Office"
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsLocationPickerOpen(true)}
+                    className="shrink-0"
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    {locationLat ? 'Update' : 'Set on Map'}
+                  </Button>
+                </div>
+                {locationLat && locationLng && (
+                  <p className="text-xs text-muted-foreground">
+                    📍 Coordinates: {locationLat.toFixed(6)}, {locationLng.toFixed(6)}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -757,6 +791,17 @@ export default function InventoryItemForm() {
           </Button>
         </div>
       </form>
+
+      {/* Location Picker Dialog */}
+      <ItemLocationPicker
+        open={isLocationPickerOpen}
+        onOpenChange={setIsLocationPickerOpen}
+        onLocationSelect={(lat, lng) => {
+          setLocationLat(lat);
+          setLocationLng(lng);
+        }}
+        initialLocation={locationLat && locationLng ? { lat: locationLat, lng: locationLng } : null}
+      />
     </div>
   );
 }

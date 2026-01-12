@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,9 +15,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ItemQRCode from '@/components/ItemQRCode';
 import ItemBarcode from '@/components/ItemBarcode';
 import InventoryStickerPrint from '@/components/InventoryStickerPrint';
-import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight, User, FileText, Tag, Hash } from 'lucide-react';
+import ItemLocationPicker from '@/components/ItemLocationPicker';
+import ItemLocationViewer from '@/components/ItemLocationViewer';
+import { ArrowLeft, Pencil, QrCode, MapPin, Calendar, FolderOpen, Package, ChevronLeft, ChevronRight, User, FileText, Tag, Hash, Map } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 const conditionColors: Record<string, string> = {
   'Excellent Condition': 'bg-green-500/10 text-green-600',
@@ -44,9 +47,12 @@ const formatCurrency = (amount: number) => {
 export default function InventoryItemView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [stickerSize, setStickerSize] = useState<'small' | 'medium' | 'large'>('medium');
+  const [isLocationViewerOpen, setIsLocationViewerOpen] = useState(false);
+  const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
 
   const { data: item, isLoading, error } = useQuery({
     queryKey: ['inventory-item', id],
@@ -96,6 +102,29 @@ export default function InventoryItemView() {
       setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     }
   };
+
+  // Mutation to update location
+  const updateLocationMutation = useMutation({
+    mutationFn: async ({ lat, lng }: { lat: number; lng: number }) => {
+      if (!id) throw new Error('No item ID');
+      const { error } = await supabase
+        .from('inventory_items')
+        .update({
+          location_lat: lat,
+          location_lng: lng,
+          location_updated_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory-item', id] });
+      toast.success('Location updated successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to update location: ' + error.message);
+    },
+  });
 
   if (isLoading) {
     return (
@@ -261,6 +290,31 @@ export default function InventoryItemView() {
                   </div>
                 )}
 
+                {/* Map Location Button */}
+                <div className="flex items-center gap-2 pt-2">
+                  <Map className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Map Location:</span>
+                  {item.location_lat && item.location_lng ? (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setIsLocationViewerOpen(true)}
+                    >
+                      <MapPin className="h-3 w-3 mr-1" />
+                      View on Map
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setIsLocationPickerOpen(true)}
+                    >
+                      <MapPin className="h-3 w-3 mr-1" />
+                      Add Location
+                    </Button>
+                  )}
+                </div>
+
                 {item.date_received && (
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -415,6 +469,30 @@ export default function InventoryItemView() {
           </Tabs>
         </DialogContent>
       </Dialog>
+
+      {/* Location Viewer Dialog */}
+      {item.location_lat && item.location_lng && (
+        <ItemLocationViewer
+          open={isLocationViewerOpen}
+          onOpenChange={setIsLocationViewerOpen}
+          location={{ lat: Number(item.location_lat), lng: Number(item.location_lng) }}
+          itemName={item.name}
+        />
+      )}
+
+      {/* Location Picker Dialog */}
+      <ItemLocationPicker
+        open={isLocationPickerOpen}
+        onOpenChange={setIsLocationPickerOpen}
+        onLocationSelect={(lat, lng) => {
+          updateLocationMutation.mutate({ lat, lng });
+        }}
+        initialLocation={
+          item.location_lat && item.location_lng 
+            ? { lat: Number(item.location_lat), lng: Number(item.location_lng) } 
+            : null
+        }
+      />
     </div>
   );
 }
