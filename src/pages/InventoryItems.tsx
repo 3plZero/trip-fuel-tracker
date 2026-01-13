@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { Plus, Search, Eye, Pencil, Trash2, Package, Filter, Upload } from 'lucide-react';
+import { Plus, Search, Eye, Pencil, Trash2, Package, Filter, Upload, LayoutGrid, List } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import InventoryImportDialog from '@/components/InventoryImportDialog';
@@ -82,6 +82,7 @@ export default function InventoryItems() {
   const [showFilters, setShowFilters] = useState(false);
   const [deleteItem, setDeleteItem] = useState<{ id: string; name: string } | null>(null);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   
   // Barcode scanner detection
   const barcodeBuffer = useRef('');
@@ -159,7 +160,8 @@ export default function InventoryItems() {
         .from('inventory_items')
         .select(`
           *,
-          category:inventory_categories(id, name)
+          category:inventory_categories(id, name),
+          images:inventory_item_images(id, image_url, sort_order)
         `)
         .order('created_at', { ascending: false });
 
@@ -258,6 +260,24 @@ export default function InventoryItems() {
                 </Badge>
               )}
             </Button>
+            <div className="flex border rounded-md">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => setViewMode('grid')}
+                className="rounded-r-none"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                size="icon"
+                onClick={() => setViewMode('list')}
+                className="rounded-l-none"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {showFilters && (
@@ -306,92 +326,137 @@ export default function InventoryItems() {
         </CardContent>
       </Card>
 
-      {/* Items Table */}
-      <Card>
-        <CardContent className="p-0">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <LoadingSpinner size="lg" />
-            </div>
-          ) : items && items.length > 0 ? (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12">#</TableHead>
-                    <TableHead>Product ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Brand/Model</TableHead>
-                    <TableHead>Serial No.</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Condition</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Accountable Person</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-                      <TableCell className="font-mono text-sm">{item.product_id}</TableCell>
-                      <TableCell className="font-medium max-w-[200px] truncate">{item.name}</TableCell>
-                      <TableCell className="max-w-[150px] truncate">{item.brand_model || '-'}</TableCell>
-                      <TableCell className="font-mono text-sm">{item.serial_number || '-'}</TableCell>
-                      <TableCell>{item.current_location || '-'}</TableCell>
-                      <TableCell>
-                        {item.condition && (
-                          <Badge className={conditionColors[item.condition] || 'bg-muted'}>
-                            {item.condition.replace(' Condition', '')}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {item.utilization_status && (
-                          <Badge className={utilizationColors[item.utilization_status] || 'bg-muted'}>
-                            {item.utilization_status}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>{item.accountable_person || '-'}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Link to={`/inventory-items/${item.id}`}>
-                            <Button variant="ghost" size="icon">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Link to={`/inventory-items/${item.id}/edit`}>
-                            <Button variant="ghost" size="icon">
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setDeleteItem({ id: item.id, name: item.name })}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+      {/* Items Display */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <LoadingSpinner size="lg" />
+        </div>
+      ) : items && items.length > 0 ? (
+        viewMode === 'grid' ? (
+          /* Grid/Box View */
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {items.map((item) => {
+              const primaryImage = item.images?.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))[0];
+              return (
+                <Link key={item.id} to={`/inventory-items/${item.id}`}>
+                  <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group h-full">
+                    <div className="aspect-square bg-muted relative overflow-hidden">
+                      {primaryImage ? (
+                        <img
+                          src={primaryImage.image_url}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package className="h-12 w-12 text-muted-foreground/50" />
                         </div>
-                      </TableCell>
+                      )}
+                      {item.condition && (
+                        <Badge className={`absolute top-2 right-2 text-xs ${conditionColors[item.condition] || 'bg-muted'}`}>
+                          {item.condition.replace(' Condition', '')}
+                        </Badge>
+                      )}
+                    </div>
+                    <CardContent className="p-3">
+                      <h3 className="font-medium text-sm line-clamp-2 mb-1">{item.name}</h3>
+                      <p className="text-xs text-muted-foreground font-mono">{item.product_id}</p>
+                      {item.utilization_status && (
+                        <Badge variant="outline" className={`mt-2 text-xs ${utilizationColors[item.utilization_status] || ''}`}>
+                          {item.utilization_status}
+                        </Badge>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          /* List/Table View */
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">#</TableHead>
+                      <TableHead>Product ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Brand/Model</TableHead>
+                      <TableHead>Serial No.</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Condition</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Accountable Person</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-            <div className="py-12 text-center">
-              <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No items found.</p>
-              <Link to="/inventory-items/new">
-                <Button variant="link">Add your first item</Button>
-              </Link>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {items.map((item, index) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="text-muted-foreground">{index + 1}</TableCell>
+                        <TableCell className="font-mono text-sm">{item.product_id}</TableCell>
+                        <TableCell className="font-medium max-w-[200px] truncate">{item.name}</TableCell>
+                        <TableCell className="max-w-[150px] truncate">{item.brand_model || '-'}</TableCell>
+                        <TableCell className="font-mono text-sm">{item.serial_number || '-'}</TableCell>
+                        <TableCell>{item.current_location || '-'}</TableCell>
+                        <TableCell>
+                          {item.condition && (
+                            <Badge className={conditionColors[item.condition] || 'bg-muted'}>
+                              {item.condition.replace(' Condition', '')}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {item.utilization_status && (
+                            <Badge className={utilizationColors[item.utilization_status] || 'bg-muted'}>
+                              {item.utilization_status}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>{item.accountable_person || '-'}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Link to={`/inventory-items/${item.id}`}>
+                              <Button variant="ghost" size="icon">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                            <Link to={`/inventory-items/${item.id}/edit`}>
+                              <Button variant="ghost" size="icon">
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setDeleteItem({ id: item.id, name: item.name })}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        )
+      ) : (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">No items found.</p>
+            <Link to="/inventory-items/new">
+              <Button variant="link">Add your first item</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Results Count */}
       {items && items.length > 0 && (
