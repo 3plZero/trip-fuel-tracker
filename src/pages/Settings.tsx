@@ -158,11 +158,79 @@ export default function Settings() {
     setUpdatingRole(null);
   }
 
+  // Format table name for display
+  const formatTableName = (tableName: string | null): string => {
+    if (!tableName) return 'record';
+    const names: Record<string, string> = {
+      vehicles: 'vehicle',
+      drivers: 'driver',
+      trip_tickets: 'trip ticket',
+      travel_orders: 'travel order',
+      inventory_items: 'inventory item',
+      inventory_categories: 'inventory category',
+      buildings: 'building',
+      generators: 'generator',
+      vehicle_maintenance_checklists: 'vehicle maintenance checklist',
+      building_maintenance_checklists: 'building maintenance checklist',
+      generator_maintenance_checklists: 'generator maintenance checklist',
+      profiles: 'profile',
+      user_roles: 'user role',
+    };
+    return names[tableName] || tableName.replace(/_/g, ' ');
+  };
+
+  // Get human-readable description of the action
+  const getActionDescription = (log: AuditLog): string => {
+    const tableName = formatTableName(log.table_name);
+    const newData = log.new_data as Record<string, unknown> | null;
+    const oldData = log.old_data as Record<string, unknown> | null;
+    
+    // Get a meaningful identifier from the data
+    const getIdentifier = (data: Record<string, unknown> | null): string => {
+      if (!data) return '';
+      // Try common identifier fields
+      const identifierFields = ['name', 'full_name', 'plate_no', 'tr_no', 'travel_order_no', 'product_id', 'building_name', 'equipment_name', 'title'];
+      for (const field of identifierFields) {
+        if (data[field]) return ` "${data[field]}"`;
+      }
+      return '';
+    };
+
+    switch (log.action) {
+      case 'insert':
+        return `Created ${tableName}${getIdentifier(newData)}`;
+      case 'update':
+        // Find what fields changed
+        if (newData && oldData) {
+          const changedFields = Object.keys(newData).filter(
+            key => JSON.stringify(newData[key]) !== JSON.stringify(oldData[key]) && 
+                   !['updated_at', 'created_at'].includes(key)
+          );
+          if (changedFields.length > 0 && changedFields.length <= 3) {
+            return `Updated ${changedFields.join(', ')} in ${tableName}${getIdentifier(newData)}`;
+          }
+        }
+        return `Updated ${tableName}${getIdentifier(newData)}`;
+      case 'delete':
+        return `Deleted ${tableName}${getIdentifier(oldData)}`;
+      case 'role_change':
+        const newRole = newData?.role;
+        return `Changed user role to ${newRole}`;
+      case 'login':
+        return 'Logged in';
+      case 'logout':
+        return 'Logged out';
+      default:
+        return log.action.replace(/_/g, ' ');
+    }
+  };
+
   const filteredLogs = auditLogs.filter((log) => {
     const matchesSearch = logSearch === '' || 
       log.action.toLowerCase().includes(logSearch.toLowerCase()) ||
       log.table_name?.toLowerCase().includes(logSearch.toLowerCase()) ||
-      log.user_name?.toLowerCase().includes(logSearch.toLowerCase());
+      log.user_name?.toLowerCase().includes(logSearch.toLowerCase()) ||
+      getActionDescription(log).toLowerCase().includes(logSearch.toLowerCase());
     
     const matchesFilter = logFilter === 'all' || log.action === logFilter;
     
@@ -395,8 +463,8 @@ export default function Settings() {
                               <TableCell className="text-sm">
                                 {log.table_name || '-'}
                               </TableCell>
-                              <TableCell className="text-sm max-w-[200px] truncate">
-                                {log.new_data ? JSON.stringify(log.new_data) : '-'}
+                              <TableCell className="text-sm max-w-[300px]">
+                                {getActionDescription(log)}
                               </TableCell>
                             </TableRow>
                           ))}
