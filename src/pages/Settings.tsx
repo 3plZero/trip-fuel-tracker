@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Shield, Users, Settings as SettingsIcon, ClipboardList, Search, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Shield, Users, Settings as SettingsIcon, ClipboardList, Search, RefreshCw, User, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { format } from 'date-fns';
@@ -241,47 +241,60 @@ export default function Settings() {
 
   if (roleLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d1b2a]">
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-[#0d1b2a] via-[#1b263b] to-[#0d1b2a]">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <Button
-          variant="ghost"
-          className="mb-6"
-          onClick={() => navigate('/')}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Home
-        </Button>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <Button
+            variant="ghost"
+            className="text-white/70 hover:text-white hover:bg-white/10"
+            onClick={() => navigate('/')}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+        </div>
 
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
-            <SettingsIcon className="h-6 w-6 text-primary-foreground" />
+        {/* Title Section */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/25">
+            <SettingsIcon className="h-7 w-7 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Settings</h1>
-            <p className="text-muted-foreground">Manage your account and system settings</p>
+            <h1 className="text-3xl font-bold text-white">Settings</h1>
+            <p className="text-white/60">Manage your account and system settings</p>
           </div>
         </div>
 
         <Tabs defaultValue="account" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="account" className="gap-2">
+          <TabsList className="bg-white/5 border border-white/10 p-1">
+            <TabsTrigger 
+              value="account" 
+              className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white text-white/70"
+            >
               <Shield className="h-4 w-4" />
               Account
             </TabsTrigger>
             {isAdmin && (
               <>
-                <TabsTrigger value="users" className="gap-2">
+                <TabsTrigger 
+                  value="users" 
+                  className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white text-white/70"
+                >
                   <Users className="h-4 w-4" />
-                  User Management
+                  Users
                 </TabsTrigger>
-                <TabsTrigger value="audit" className="gap-2">
+                <TabsTrigger 
+                  value="audit" 
+                  className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white text-white/70"
+                >
                   <ClipboardList className="h-4 w-4" />
                   Audit Logs
                 </TabsTrigger>
@@ -290,23 +303,42 @@ export default function Settings() {
           </TabsList>
 
           <TabsContent value="account">
-            <Card>
-              <CardHeader>
-                <CardTitle>Account Information</CardTitle>
-                <CardDescription>Your account details and role</CardDescription>
+            <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+              <CardHeader className="border-b border-white/10">
+                <CardTitle className="text-white">Account Information</CardTitle>
+                <CardDescription className="text-white/60">Your account details and role</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Email</p>
-                  <p className="text-foreground">{user?.email}</p>
+              <CardContent className="pt-6 space-y-6">
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Mail className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white/60">Email Address</p>
+                    <p className="text-white font-medium">{user?.email}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Role</p>
-                  <Badge variant={isAdmin ? 'default' : 'secondary'}>
-                    {isAdmin ? 'Admin' : 'User'}
-                  </Badge>
+                
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <User className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white/60">Role</p>
+                    <Badge 
+                      variant={isAdmin ? 'default' : 'secondary'}
+                      className={isAdmin ? 'bg-primary text-white' : 'bg-white/10 text-white/80'}
+                    >
+                      {isAdmin ? 'Administrator' : 'User'}
+                    </Badge>
+                  </div>
                 </div>
-                <Button variant="outline" onClick={() => navigate('/profile')}>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/profile')}
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
                   Edit Profile
                 </Button>
               </CardContent>
@@ -315,65 +347,70 @@ export default function Settings() {
 
           {isAdmin && (
             <TabsContent value="users">
-              <Card>
-                <CardHeader>
-                  <CardTitle>User Management</CardTitle>
-                  <CardDescription>Manage user roles and permissions</CardDescription>
+              <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+                <CardHeader className="border-b border-white/10">
+                  <CardTitle className="text-white">User Management</CardTitle>
+                  <CardDescription className="text-white/60">Manage user roles and permissions</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   {loadingUsers ? (
-                    <div className="flex items-center justify-center py-8">
+                    <div className="flex items-center justify-center py-12">
                       <LoadingSpinner size="lg" />
                     </div>
                   ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Position</TableHead>
-                          <TableHead>Role</TableHead>
-                          <TableHead className="w-[150px]">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {users.map((u) => (
-                          <TableRow key={u.id}>
-                            <TableCell className="font-medium">
-                              {u.full_name || 'Unnamed'}
-                            </TableCell>
-                            <TableCell>{u.position || '-'}</TableCell>
-                            <TableCell>
-                              <Badge variant={u.role === 'admin' ? 'default' : 'secondary'}>
-                                {u.role}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              {u.id !== user?.id ? (
-                                <Select
-                                  value={u.role}
-                                  onValueChange={(value: 'admin' | 'user') =>
-                                    updateUserRole(u.id, value)
-                                  }
-                                  disabled={updatingRole === u.id}
-                                >
-                                  <SelectTrigger className="w-[120px]">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="user">User</SelectItem>
-                                    <SelectItem value="admin">Admin</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              ) : (
-                                <span className="text-sm text-muted-foreground">
-                                  (You)
-                                </span>
-                              )}
-                            </TableCell>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="border-white/10 hover:bg-transparent">
+                            <TableHead className="text-white/60">Name</TableHead>
+                            <TableHead className="text-white/60">Position</TableHead>
+                            <TableHead className="text-white/60">Role</TableHead>
+                            <TableHead className="text-white/60 w-[150px]">Actions</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {users.map((u) => (
+                            <TableRow key={u.id} className="border-white/10 hover:bg-white/5">
+                              <TableCell className="font-medium text-white">
+                                {u.full_name || 'Unnamed'}
+                              </TableCell>
+                              <TableCell className="text-white/70">{u.position || '-'}</TableCell>
+                              <TableCell>
+                                <Badge 
+                                  variant={u.role === 'admin' ? 'default' : 'secondary'}
+                                  className={u.role === 'admin' ? 'bg-primary text-white' : 'bg-white/10 text-white/80'}
+                                >
+                                  {u.role}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                {u.id !== user?.id ? (
+                                  <Select
+                                    value={u.role}
+                                    onValueChange={(value: 'admin' | 'user') =>
+                                      updateUserRole(u.id, value)
+                                    }
+                                    disabled={updatingRole === u.id}
+                                  >
+                                    <SelectTrigger className="w-[120px] bg-white/5 border-white/20 text-white">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="user">User</SelectItem>
+                                      <SelectItem value="admin">Admin</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  <span className="text-sm text-white/50 italic">
+                                    (You)
+                                  </span>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -382,37 +419,38 @@ export default function Settings() {
 
           {isAdmin && (
             <TabsContent value="audit">
-              <Card>
-                <CardHeader>
+              <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+                <CardHeader className="border-b border-white/10">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <CardTitle>Audit Logs</CardTitle>
-                      <CardDescription>View all system activity and changes</CardDescription>
+                      <CardTitle className="text-white">Audit Logs</CardTitle>
+                      <CardDescription className="text-white/60">View all system activity and changes</CardDescription>
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={fetchAuditLogs}
                       disabled={loadingLogs}
+                      className="border-white/20 text-white hover:bg-white/10"
                     >
                       <RefreshCw className={`h-4 w-4 mr-2 ${loadingLogs ? 'animate-spin' : ''}`} />
                       Refresh
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col sm:flex-row gap-4 mb-6">
                     <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
                       <Input
                         placeholder="Search logs..."
                         value={logSearch}
                         onChange={(e) => setLogSearch(e.target.value)}
-                        className="pl-10"
+                        className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-white/40"
                       />
                     </div>
                     <Select value={logFilter} onValueChange={setLogFilter}>
-                      <SelectTrigger className="w-[180px]">
+                      <SelectTrigger className="w-[180px] bg-white/5 border-white/20 text-white">
                         <SelectValue placeholder="Filter by action" />
                       </SelectTrigger>
                       <SelectContent>
@@ -427,49 +465,48 @@ export default function Settings() {
                   </div>
 
                   {loadingLogs ? (
-                    <div className="flex items-center justify-center py-8">
+                    <div className="flex items-center justify-center py-12">
                       <LoadingSpinner size="lg" />
                     </div>
                   ) : filteredLogs.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No audit logs found
+                    <div className="text-center py-12 text-white/50">
+                      <ClipboardList className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p>No audit logs found</p>
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="w-[180px]">Timestamp</TableHead>
-                            <TableHead>User</TableHead>
-                            <TableHead>Action</TableHead>
-                            <TableHead>Table</TableHead>
-                            <TableHead>Details</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {filteredLogs.map((log) => (
-                            <TableRow key={log.id}>
-                              <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                                {format(new Date(log.created_at), 'MMM d, yyyy HH:mm:ss')}
-                              </TableCell>
-                              <TableCell className="font-medium">
-                                {log.user_name}
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant="outline">
-                                  {log.action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                {log.table_name || '-'}
-                              </TableCell>
-                              <TableCell className="text-sm max-w-[300px]">
+                    <div className="space-y-3">
+                      {filteredLogs.map((log) => (
+                        <div 
+                          key={log.id} 
+                          className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/[0.07] transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white font-medium">
                                 {getActionDescription(log)}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                              </p>
+                              <div className="flex items-center gap-3 mt-2 text-sm">
+                                <span className="text-white/60">by {log.user_name}</span>
+                                <span className="text-white/30">•</span>
+                                <span className="text-white/50">
+                                  {format(new Date(log.created_at), 'MMM d, yyyy h:mm a')}
+                                </span>
+                              </div>
+                            </div>
+                            <Badge 
+                              variant="outline" 
+                              className={`shrink-0 border-white/20 ${
+                                log.action === 'insert' ? 'text-green-400 border-green-400/30' :
+                                log.action === 'update' ? 'text-blue-400 border-blue-400/30' :
+                                log.action === 'delete' ? 'text-red-400 border-red-400/30' :
+                                'text-white/70'
+                              }`}
+                            >
+                              {log.action.replace(/_/g, ' ')}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </CardContent>
