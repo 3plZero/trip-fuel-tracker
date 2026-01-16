@@ -125,7 +125,7 @@ export default function Auth() {
           <div>
             <CardTitle className="text-2xl font-bold">DOST-CAR</CardTitle>
             <CardDescription className="text-base">
-              Fuel Consumption Report System
+              Management System
             </CardDescription>
           </div>
         </CardHeader>
