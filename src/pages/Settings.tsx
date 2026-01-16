@@ -335,9 +335,8 @@ export default function Settings() {
                 </div>
                 
                 <Button 
-                  variant="outline" 
                   onClick={() => navigate('/profile')}
-                  className="border-white/20 text-white hover:bg-white/10"
+                  className="bg-primary hover:bg-primary/90 text-white"
                 >
                   Edit Profile
                 </Button>
