@@ -426,11 +426,10 @@ export default function Settings() {
                       <CardDescription className="text-white/60">View all system activity and changes</CardDescription>
                     </div>
                     <Button
-                      variant="outline"
                       size="sm"
                       onClick={fetchAuditLogs}
                       disabled={loadingLogs}
-                      className="border-white/20 text-white hover:bg-white/10"
+                      className="bg-primary hover:bg-primary/90 text-white"
                     >
                       <RefreshCw className={`h-4 w-4 mr-2 ${loadingLogs ? 'animate-spin' : ''}`} />
                       Refresh
