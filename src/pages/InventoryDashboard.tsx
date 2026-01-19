@@ -2,9 +2,25 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
-import { Package, FolderOpen, Plus, Clock } from 'lucide-react';
+import { Package, FolderOpen, Plus, Clock, HardDrive } from 'lucide-react';
 import { format } from 'date-fns';
+
+const formatBytes = (bytes: number): string => {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+const SUPABASE_FREE_TIER_LIMIT = 1 * 1024 * 1024 * 1024; // 1 GB in bytes
+
+interface BucketUsage {
+  bucket_id: string;
+  total_bytes: number;
+}
 
 export default function InventoryDashboard() {
   const { data: categories } = useQuery({
@@ -27,6 +43,16 @@ export default function InventoryDashboard() {
     },
   });
 
+  const { data: storageUsage } = useQuery({
+    queryKey: ['storage-usage'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .rpc('get_storage_usage');
+      if (error) throw error;
+      return data as BucketUsage[];
+    },
+  });
+
   const { data: recentItems } = useQuery({
     queryKey: ['recent-inventory-items'],
     queryFn: async () => {
@@ -42,6 +68,21 @@ export default function InventoryDashboard() {
       return data;
     },
   });
+
+  const totalStorageUsed = storageUsage?.reduce((acc, bucket) => acc + (bucket.total_bytes || 0), 0) || 0;
+  const storagePercentage = (totalStorageUsed / SUPABASE_FREE_TIER_LIMIT) * 100;
+  
+  const getProgressColor = (percentage: number) => {
+    if (percentage >= 80) return 'bg-destructive';
+    if (percentage >= 50) return 'bg-yellow-500';
+    return 'bg-primary';
+  };
+
+  const bucketLabels: Record<string, string> = {
+    'inventory-images': 'Inventory Images',
+    'driver-licenses': 'Driver Licenses',
+    'vehicle-registrations': 'Vehicle Registrations',
+  };
 
   return (
     <div className="space-y-6">
