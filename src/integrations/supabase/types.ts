@@ -1124,6 +1124,13 @@ export type Database = {
       generate_product_id: { Args: never; Returns: string }
       generate_tr_no: { Args: never; Returns: string }
       generate_travel_order_no: { Args: never; Returns: string }
+      get_storage_usage: {
+        Args: never
+        Returns: {
+          bucket_id: string
+          total_bytes: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -46,10 +46,9 @@ export default function InventoryDashboard() {
   const { data: storageUsage } = useQuery({
     queryKey: ['storage-usage'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .rpc('get_storage_usage');
+      const { data, error } = await (supabase.rpc as any)('get_storage_usage');
       if (error) throw error;
-      return data as BucketUsage[];
+      return (data || []) as BucketUsage[];
     },
   });
 
@@ -135,7 +134,62 @@ export default function InventoryDashboard() {
         </Card>
       </div>
 
-      {/* Recent Items */}
+      {/* Storage Usage Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <HardDrive className="h-5 w-5" />
+            Supabase Storage Usage
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Total Used</span>
+              <span className="font-medium">
+                {formatBytes(totalStorageUsed)} / {formatBytes(SUPABASE_FREE_TIER_LIMIT)}
+              </span>
+            </div>
+            <div className="relative">
+              <Progress value={Math.min(storagePercentage, 100)} className="h-3" />
+              <div 
+                className={`absolute inset-0 h-3 rounded-full ${getProgressColor(storagePercentage)}`}
+                style={{ width: `${Math.min(storagePercentage, 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground text-right">
+              {storagePercentage.toFixed(1)}% used
+            </p>
+          </div>
+
+          {storageUsage && storageUsage.length > 0 && (
+            <div className="space-y-3 pt-2 border-t">
+              <p className="text-sm font-medium">By Bucket</p>
+              {storageUsage.map((bucket) => {
+                const bucketPercentage = (bucket.total_bytes / SUPABASE_FREE_TIER_LIMIT) * 100;
+                return (
+                  <div key={bucket.bucket_id} className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">
+                        {bucketLabels[bucket.bucket_id] || bucket.bucket_id}
+                      </span>
+                      <span>{formatBytes(bucket.total_bytes)}</span>
+                    </div>
+                    <Progress value={bucketPercentage} className="h-1.5" />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {(!storageUsage || storageUsage.length === 0) && (
+            <p className="text-sm text-muted-foreground text-center py-2">
+              No storage usage yet
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
