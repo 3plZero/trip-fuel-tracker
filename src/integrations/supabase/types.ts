@@ -559,6 +559,81 @@ export type Database = {
         }
         Relationships: []
       }
+      technology_trainings: {
+        Row: {
+          actual_expenses: number | null
+          approved_amount: number | null
+          counterpart: string | null
+          created_at: string
+          created_by: string | null
+          firm_names: string | null
+          firms_assisted: number | null
+          id: string
+          participants_differently_abled: number | null
+          participants_female: number | null
+          participants_male: number | null
+          participants_senior: number | null
+          participants_total: number | null
+          province: string
+          remarks: string | null
+          resource_persons: string | null
+          status: string | null
+          title: string
+          training_date_end: string | null
+          training_date_start: string | null
+          updated_at: string
+          venue: string | null
+        }
+        Insert: {
+          actual_expenses?: number | null
+          approved_amount?: number | null
+          counterpart?: string | null
+          created_at?: string
+          created_by?: string | null
+          firm_names?: string | null
+          firms_assisted?: number | null
+          id?: string
+          participants_differently_abled?: number | null
+          participants_female?: number | null
+          participants_male?: number | null
+          participants_senior?: number | null
+          participants_total?: number | null
+          province: string
+          remarks?: string | null
+          resource_persons?: string | null
+          status?: string | null
+          title: string
+          training_date_end?: string | null
+          training_date_start?: string | null
+          updated_at?: string
+          venue?: string | null
+        }
+        Update: {
+          actual_expenses?: number | null
+          approved_amount?: number | null
+          counterpart?: string | null
+          created_at?: string
+          created_by?: string | null
+          firm_names?: string | null
+          firms_assisted?: number | null
+          id?: string
+          participants_differently_abled?: number | null
+          participants_female?: number | null
+          participants_male?: number | null
+          participants_senior?: number | null
+          participants_total?: number | null
+          province?: string
+          remarks?: string | null
+          resource_persons?: string | null
+          status?: string | null
+          title?: string
+          training_date_end?: string | null
+          training_date_start?: string | null
+          updated_at?: string
+          venue?: string | null
+        }
+        Relationships: []
+      }
       travel_order_expenses: {
         Row: {
           amount: number | null
