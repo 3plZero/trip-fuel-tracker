@@ -65,6 +65,7 @@ interface StatusData {
 
 export default function TravelOrderDashboard() {
   const [travelOrders, setTravelOrders] = useState<TravelOrder[]>([]);
+  const [allOrders, setAllOrders] = useState<{ order_date: string }[]>([]);
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStats>({
     totalOrders: 0,
     approvedOrders: 0,
@@ -77,6 +78,13 @@ export default function TravelOrderDashboard() {
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Fetch all order dates once to build month options
+  useEffect(() => {
+    supabase.from('travel_orders').select('order_date').then(({ data }) => {
+      setAllOrders(data || []);
+    });
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -190,15 +198,16 @@ export default function TravelOrderDashboard() {
     }
   };
 
-  // Generate month options for the last 12 months
-  const monthOptions = [];
-  for (let i = 0; i < 12; i++) {
-    const date = subMonths(new Date(), i);
-    monthOptions.push({
-      value: format(date, 'yyyy-MM'),
-      label: format(date, 'MMMM yyyy'),
-    });
-  }
+  // Build month options from actual records only
+  const monthOptions = Array.from(
+    new Set(allOrders.map(o => format(new Date(o.order_date), 'yyyy-MM')))
+  )
+    .sort()
+    .reverse()
+    .map(value => ({
+      value,
+      label: format(new Date(value + '-01'), 'MMMM yyyy'),
+    }));
 
   if (loading) {
     return (
