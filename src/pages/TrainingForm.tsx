@@ -74,6 +74,10 @@ export default function TrainingForm() {
       toast({ title: 'Validation', description: 'Title and Province are required.', variant: 'destructive' });
       return;
     }
+    if (form.approved_amount > 0 && form.actual_expenses > form.approved_amount) {
+      toast({ title: 'Validation', description: 'Actual expenses cannot exceed the approved amount.', variant: 'destructive' });
+      return;
+    }
     setSaving(true);
 
     const payload = {
