@@ -39,6 +39,10 @@ import InventoryItems from "@/pages/InventoryItems";
 import InventoryItemForm from "@/pages/InventoryItemForm";
 import InventoryItemView from "@/pages/InventoryItemView";
 import ItemScan from "@/pages/ItemScan";
+import TrainingsDashboard from "@/pages/TrainingsDashboard";
+import Trainings from "@/pages/Trainings";
+import TrainingForm from "@/pages/TrainingForm";
+import TrainingView from "@/pages/TrainingView";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const queryClient = new QueryClient();
@@ -124,6 +128,12 @@ function AppRoutes() {
       <Route path="/inventory-items/new" element={<ProtectedRouteWithLayout><InventoryItemForm /></ProtectedRouteWithLayout>} />
       <Route path="/inventory-items/:id" element={<ProtectedRouteWithLayout><InventoryItemView /></ProtectedRouteWithLayout>} />
       <Route path="/inventory-items/:id/edit" element={<ProtectedRouteWithLayout><InventoryItemForm /></ProtectedRouteWithLayout>} />
+      {/* Technology Trainings System Routes */}
+      <Route path="/trainings-dashboard" element={<ProtectedRouteWithLayout><TrainingsDashboard /></ProtectedRouteWithLayout>} />
+      <Route path="/trainings" element={<ProtectedRouteWithLayout><Trainings /></ProtectedRouteWithLayout>} />
+      <Route path="/trainings/new" element={<ProtectedRouteWithLayout><TrainingForm /></ProtectedRouteWithLayout>} />
+      <Route path="/trainings/:id" element={<ProtectedRouteWithLayout><TrainingView /></ProtectedRouteWithLayout>} />
+      <Route path="/trainings/:id/edit" element={<ProtectedRouteWithLayout><TrainingForm /></ProtectedRouteWithLayout>} />
       {/* Shared Routes */}
       <Route path="/vehicles" element={<ProtectedRouteWithLayout><Vehicles /></ProtectedRouteWithLayout>} />
       <Route path="/drivers" element={<ProtectedRouteWithLayout><Drivers /></ProtectedRouteWithLayout>} />

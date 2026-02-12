@@ -24,6 +24,7 @@ import {
   Zap,
   Package,
   FolderOpen,
+  GraduationCap,
   Home,
   User,
   Settings,
@@ -36,7 +37,7 @@ interface AppLayoutProps {
   children: ReactNode;
 }
 
-type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance' | 'inventory-system';
+type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance' | 'inventory-system' | 'technology-trainings';
 
 const fuelReportNavigation = [
   { name: 'Dashboard', href: '/fuel-dashboard', icon: LayoutDashboard },
@@ -64,6 +65,11 @@ const inventoryNavigation = [
   { name: 'All Items', href: '/inventory-items', icon: Package },
 ];
 
+const trainingsNavigation = [
+  { name: 'Dashboard', href: '/trainings-dashboard', icon: LayoutDashboard },
+  { name: 'All Trainings', href: '/trainings', icon: GraduationCap },
+];
+
 export default function AppLayout({ children }: AppLayoutProps) {
   const { signOut } = useAuth();
   const location = useLocation();
@@ -74,6 +80,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     if (path.includes('travel-order')) return 'travel-order';
     if (path.includes('maintenance') || path.includes('generator') || path.includes('building')) return 'preventive-maintenance';
     if (path.includes('inventory')) return 'inventory-system';
+    if (path.includes('training')) return 'technology-trainings';
     return 'fuel-report';
   });
 
@@ -83,7 +90,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
       ? travelOrderNavigation 
       : currentSystem === 'inventory-system'
         ? inventoryNavigation
-        : preventiveMaintenanceNavigation;
+        : currentSystem === 'technology-trainings'
+          ? trainingsNavigation
+          : preventiveMaintenanceNavigation;
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,6 +156,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <SelectItem value="travel-order">Travel Order System</SelectItem>
                 <SelectItem value="preventive-maintenance">Preventive Maintenance</SelectItem>
                 <SelectItem value="inventory-system">Inventory System</SelectItem>
+                <SelectItem value="technology-trainings">Technology Trainings</SelectItem>
               </SelectContent>
             </Select>
           </div>
