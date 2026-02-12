@@ -143,10 +143,18 @@ export default function TrainingForm() {
               <Label>Start Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !form.training_date_start && "text-muted-foreground")}>
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {form.training_date_start ? format(form.training_date_start, 'PPP') : 'Pick a date'}
-                  </Button>
+                  <div className="relative">
+                    <Input
+                      type="date"
+                      value={form.training_date_start ? format(form.training_date_start, 'yyyy-MM-dd') : ''}
+                      onChange={e => {
+                        const val = e.target.value;
+                        set('training_date_start', val ? new Date(val + 'T00:00:00') : undefined);
+                      }}
+                      className="w-full pr-10"
+                    />
+                    <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar mode="single" selected={form.training_date_start} onSelect={d => set('training_date_start', d)} className="p-3 pointer-events-auto" />
@@ -157,10 +165,18 @@ export default function TrainingForm() {
               <Label>End Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !form.training_date_end && "text-muted-foreground")}>
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {form.training_date_end ? format(form.training_date_end, 'PPP') : 'Pick a date'}
-                  </Button>
+                  <div className="relative">
+                    <Input
+                      type="date"
+                      value={form.training_date_end ? format(form.training_date_end, 'yyyy-MM-dd') : ''}
+                      onChange={e => {
+                        const val = e.target.value;
+                        set('training_date_end', val ? new Date(val + 'T00:00:00') : undefined);
+                      }}
+                      className="w-full pr-10"
+                    />
+                    <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar mode="single" selected={form.training_date_end} onSelect={d => set('training_date_end', d)} className="p-3 pointer-events-auto" />
