@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GraduationCap, Users, Building2, DollarSign } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -9,17 +10,27 @@ const PROVINCES = ['Abra', 'Apayao', 'Benguet', 'Ifugao', 'Kalinga', 'Mountain P
 const COLORS = ['#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
 
 export default function TrainingsDashboard() {
-  const [trainings, setTrainings] = useState<any[]>([]);
+  const [allTrainings, setAllTrainings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedYear, setSelectedYear] = useState<string>('all');
 
   useEffect(() => {
     async function fetch() {
       const { data } = await supabase.from('technology_trainings').select('*');
-      setTrainings(data || []);
+      setAllTrainings(data || []);
       setLoading(false);
     }
     fetch();
   }, []);
+
+  const years = Array.from(new Set(allTrainings.map(t => {
+    const d = t.training_date_start;
+    return d ? new Date(d).getFullYear().toString() : null;
+  }).filter(Boolean))).sort().reverse();
+
+  const trainings = selectedYear === 'all'
+    ? allTrainings
+    : allTrainings.filter(t => t.training_date_start && new Date(t.training_date_start).getFullYear().toString() === selectedYear);
 
   if (loading) {
     return <div className="flex items-center justify-center py-20"><LoadingSpinner size="lg" /></div>;
@@ -53,9 +64,18 @@ export default function TrainingsDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Technology Trainings Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Overview of trainings across CAR provinces</p>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Technology Trainings Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Overview of trainings across CAR provinces</p>
+        </div>
+        <Select value={selectedYear} onValueChange={setSelectedYear}>
+          <SelectTrigger className="w-[160px]"><SelectValue placeholder="Filter by year" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Years</SelectItem>
+            {years.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
