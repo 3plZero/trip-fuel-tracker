@@ -334,6 +334,78 @@ export type Database = {
         }
         Relationships: []
       }
+      gross_sales: {
+        Row: {
+          apr: number | null
+          aug: number | null
+          created_at: string
+          created_by: string | null
+          dec: number | null
+          feb: number | null
+          firm_name: string
+          funding_type: string
+          id: string
+          jan: number | null
+          jul: number | null
+          jun: number | null
+          mar: number | null
+          may: number | null
+          nov: number | null
+          oct: number | null
+          province: string
+          remarks: string | null
+          sep: number | null
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          apr?: number | null
+          aug?: number | null
+          created_at?: string
+          created_by?: string | null
+          dec?: number | null
+          feb?: number | null
+          firm_name: string
+          funding_type?: string
+          id?: string
+          jan?: number | null
+          jul?: number | null
+          jun?: number | null
+          mar?: number | null
+          may?: number | null
+          nov?: number | null
+          oct?: number | null
+          province: string
+          remarks?: string | null
+          sep?: number | null
+          updated_at?: string
+          year?: number
+        }
+        Update: {
+          apr?: number | null
+          aug?: number | null
+          created_at?: string
+          created_by?: string | null
+          dec?: number | null
+          feb?: number | null
+          firm_name?: string
+          funding_type?: string
+          id?: string
+          jan?: number | null
+          jul?: number | null
+          jun?: number | null
+          mar?: number | null
+          may?: number | null
+          nov?: number | null
+          oct?: number | null
+          province?: string
+          remarks?: string | null
+          sep?: number | null
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
       inventory_categories: {
         Row: {
           created_at: string | null
