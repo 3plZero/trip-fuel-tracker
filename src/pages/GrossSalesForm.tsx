@@ -232,10 +232,17 @@ export default function GrossSalesForm() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
-        <h1 className="text-3xl font-bold text-foreground">{isEdit ? 'Edit' : 'Add'} Gross Sales Record</h1>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
+          <h1 className="text-3xl font-bold text-foreground">{isEdit ? 'Edit' : 'Add'} Gross Sales Record</h1>
+        </div>
+        <Button type="button" variant="outline" onClick={() => setImportOpen(true)} className="gap-2">
+          <Upload className="h-4 w-4" /> Import from Excel
+        </Button>
       </div>
+
+      <GrossSalesImportDialog open={importOpen} onOpenChange={setImportOpen} onImport={handleImport} />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
