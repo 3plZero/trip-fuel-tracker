@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Plane, Wrench, Package, GraduationCap, Settings, User, LogOut, ArrowRight } from 'lucide-react';
+import { FileText, Plane, Wrench, Package, DollarSign, Settings, User, LogOut, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import logo from '@/assets/dost-car-logo-new.png';
