@@ -95,7 +95,7 @@ export default function GrossSales() {
                   <TableHead>Firm Name</TableHead>
                   <TableHead>Contact</TableHead>
                   <TableHead>Year</TableHead>
-                  <TableHead className="text-right">Total Sales</TableHead>
+                  <TableHead className="text-right">Gross Sale</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
