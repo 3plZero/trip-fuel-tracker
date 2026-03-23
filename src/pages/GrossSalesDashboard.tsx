@@ -148,7 +148,7 @@ export default function GrossSalesDashboard() {
                   <Cell fill="#0ea5e9" />
                   <Cell fill="#10b981" />
                 </Pie>
-                <Tooltip formatter={(val: number) => `₱${val.toLocaleString()}`} />
+                <Tooltip formatter={(val: number) => val.toLocaleString()} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
