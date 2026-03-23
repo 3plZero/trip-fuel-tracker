@@ -86,7 +86,7 @@ export default function InventoryItems() {
   
   // Barcode scanner detection
   const barcodeBuffer = useRef('');
-  const barcodeTimeout = useRef<NodeJS.Timeout | null>(null);
+  const barcodeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
