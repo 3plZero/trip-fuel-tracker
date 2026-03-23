@@ -93,6 +93,7 @@ export default function GrossSales() {
                   <TableHead>Province</TableHead>
                   <TableHead>Funding</TableHead>
                   <TableHead>Firm Name</TableHead>
+                  <TableHead>Contact</TableHead>
                   <TableHead>Year</TableHead>
                   <TableHead className="text-right">Total Sales</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -100,7 +101,7 @@ export default function GrossSales() {
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No records found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No records found</TableCell></TableRow>
                 ) : filtered.map(d => {
                   const total = months.reduce((s, m) => s + Number(d[m] || 0), 0);
                   return (
@@ -108,6 +109,10 @@ export default function GrossSales() {
                       <TableCell>{d.province}</TableCell>
                       <TableCell>{d.funding_type}</TableCell>
                       <TableCell className="font-medium">{d.firm_name}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {d.email && <div>{d.email}</div>}
+                        {d.mobile_number && <div>{d.mobile_number}</div>}
+                      </TableCell>
                       <TableCell>{d.year}</TableCell>
                       <TableCell className="text-right">₱{total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
                       <TableCell className="text-right">

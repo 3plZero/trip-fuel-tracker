@@ -341,6 +341,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           dec: number | null
+          email: string | null
           feb: number | null
           firm_name: string
           funding_type: string
@@ -350,6 +351,7 @@ export type Database = {
           jun: number | null
           mar: number | null
           may: number | null
+          mobile_number: string | null
           nov: number | null
           oct: number | null
           province: string
@@ -364,6 +366,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           dec?: number | null
+          email?: string | null
           feb?: number | null
           firm_name: string
           funding_type?: string
@@ -373,6 +376,7 @@ export type Database = {
           jun?: number | null
           mar?: number | null
           may?: number | null
+          mobile_number?: string | null
           nov?: number | null
           oct?: number | null
           province: string
@@ -387,6 +391,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           dec?: number | null
+          email?: string | null
           feb?: number | null
           firm_name?: string
           funding_type?: string
@@ -396,6 +401,7 @@ export type Database = {
           jun?: number | null
           mar?: number | null
           may?: number | null
+          mobile_number?: string | null
           nov?: number | null
           oct?: number | null
           province?: string
@@ -405,6 +411,65 @@ export type Database = {
           year?: number
         }
         Relationships: []
+      }
+      gross_sales_monthly_details: {
+        Row: {
+          business_status: string | null
+          existing_workers_female: number | null
+          existing_workers_male: number | null
+          gross_sales_id: string
+          id: string
+          market_outlets_female: number | null
+          market_outlets_male: number | null
+          month: string
+          new_workers_female: number | null
+          new_workers_male: number | null
+          production_volume: string | null
+          products: string | null
+          raw_material_suppliers_female: number | null
+          raw_material_suppliers_male: number | null
+        }
+        Insert: {
+          business_status?: string | null
+          existing_workers_female?: number | null
+          existing_workers_male?: number | null
+          gross_sales_id: string
+          id?: string
+          market_outlets_female?: number | null
+          market_outlets_male?: number | null
+          month: string
+          new_workers_female?: number | null
+          new_workers_male?: number | null
+          production_volume?: string | null
+          products?: string | null
+          raw_material_suppliers_female?: number | null
+          raw_material_suppliers_male?: number | null
+        }
+        Update: {
+          business_status?: string | null
+          existing_workers_female?: number | null
+          existing_workers_male?: number | null
+          gross_sales_id?: string
+          id?: string
+          market_outlets_female?: number | null
+          market_outlets_male?: number | null
+          month?: string
+          new_workers_female?: number | null
+          new_workers_male?: number | null
+          production_volume?: string | null
+          products?: string | null
+          raw_material_suppliers_female?: number | null
+          raw_material_suppliers_male?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gross_sales_monthly_details_gross_sales_id_fkey"
+            columns: ["gross_sales_id"]
+            isOneToOne: false
+            referencedRelation: "gross_sales"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       inventory_categories: {
         Row: {
