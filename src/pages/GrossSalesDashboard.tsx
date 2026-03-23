@@ -128,7 +128,7 @@ export default function GrossSalesDashboard() {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip formatter={(val: number) => `₱${val.toLocaleString()}K`} />
+                <Tooltip formatter={(val: number) => `${val.toLocaleString()}K`} />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                   {quarterData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
                 </Bar>
