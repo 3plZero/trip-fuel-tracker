@@ -80,7 +80,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     if (path.includes('travel-order')) return 'travel-order';
     if (path.includes('maintenance') || path.includes('generator') || path.includes('building')) return 'preventive-maintenance';
     if (path.includes('inventory')) return 'inventory-system';
-    if (path.includes('training')) return 'technology-trainings';
+    if (path.includes('gross-sales')) return 'gross-sales';
     return 'fuel-report';
   });
 
