@@ -101,7 +101,7 @@ export default function GrossSales() {
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No records found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No records found</TableCell></TableRow>
                 ) : filtered.map(d => {
                   const total = months.reduce((s, m) => s + Number(d[m] || 0), 0);
                   return (
