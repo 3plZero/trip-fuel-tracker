@@ -64,7 +64,32 @@ export default function GrossSalesForm() {
   );
   const [loading, setLoading] = useState(!!id);
   const [saving, setSaving] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const isEdit = !!id;
+
+  const handleImport = (data: ImportedGrossSalesData) => {
+    setForm(prev => ({
+      ...prev,
+      email: data.email || prev.email,
+      mobile_number: data.mobile_number || prev.mobile_number,
+      year: data.year || prev.year,
+      ...Object.fromEntries(MONTHS.map(m => [m.key, data.monthlySales[m.key] || prev[m.key as keyof FormData]])),
+    }));
+    setMonthlyDetails(prev => {
+      const updated = { ...prev };
+      MONTHS.forEach(m => {
+        const d = data.monthlyDetails[m.key];
+        const hasData = d && (d.products || d.production_volume || d.business_status ||
+          d.existing_workers_male || d.existing_workers_female ||
+          d.new_workers_male || d.new_workers_female ||
+          d.market_outlets_male || d.market_outlets_female ||
+          d.raw_material_suppliers_male || d.raw_material_suppliers_female);
+        if (hasData) updated[m.key] = d;
+      });
+      return updated;
+    });
+    toast({ title: 'Imported', description: 'Data filled from Excel file.' });
+  };
 
   useEffect(() => {
     if (!id) return;
