@@ -90,8 +90,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
       ? travelOrderNavigation 
       : currentSystem === 'inventory-system'
         ? inventoryNavigation
-        : currentSystem === 'technology-trainings'
-          ? trainingsNavigation
+        : currentSystem === 'gross-sales'
+          ? grossSalesNavigation
           : preventiveMaintenanceNavigation;
 
   return (
