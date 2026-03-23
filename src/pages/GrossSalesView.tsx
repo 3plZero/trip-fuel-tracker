@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Pencil, Mail, Phone } from 'lucide-react';
+import { ArrowLeft, Pencil, Mail, Phone, Printer, FileSpreadsheet } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 const MONTHS = [
   { key: 'jan', label: 'January' }, { key: 'feb', label: 'February' }, { key: 'mar', label: 'March' },
@@ -45,7 +46,6 @@ export default function GrossSalesView() {
   const total = sem1 + sem2;
 
   const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2 });
-
   const getDetail = (monthKey: string) => details.find((d: any) => d.month === monthKey);
 
   const renderMonthDetail = (monthKey: string) => {
@@ -102,6 +102,130 @@ export default function GrossSalesView() {
     </>
   );
 
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const rows = MONTHS.map(m => {
+      const d = getDetail(m.key);
+      return `<tr>
+        <td>${m.label}</td>
+        <td style="text-align:right">${fmt(Number(data[m.key] || 0))}</td>
+        <td>${d?.products || ''}</td>
+        <td>${d?.production_volume || ''}</td>
+        <td style="text-align:center">${d?.existing_workers_male || 0}</td>
+        <td style="text-align:center">${d?.existing_workers_female || 0}</td>
+        <td style="text-align:center">${d?.new_workers_male || 0}</td>
+        <td style="text-align:center">${d?.new_workers_female || 0}</td>
+        <td style="text-align:center">${d?.market_outlets_male || 0}</td>
+        <td style="text-align:center">${d?.market_outlets_female || 0}</td>
+        <td style="text-align:center">${d?.raw_material_suppliers_male || 0}</td>
+        <td style="text-align:center">${d?.raw_material_suppliers_female || 0}</td>
+        <td>${d?.business_status || ''}</td>
+      </tr>`;
+    }).join('');
+
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>${data.firm_name} - Gross Sales ${data.year}</title>
+    <style>
+      body { font-family: Arial, sans-serif; font-size: 11px; margin: 20px; }
+      h2 { margin-bottom: 4px; }
+      .meta { color: #555; margin-bottom: 12px; font-size: 12px; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border: 1px solid #333; padding: 4px 6px; }
+      th { background: #4472C4; color: white; font-size: 10px; text-align: center; }
+      .total-row { font-weight: bold; background: #D9E2F3; }
+      @media print { body { margin: 10px; } @page { size: landscape; } }
+    </style></head><body>
+    <h2>${data.firm_name}</h2>
+    <div class="meta">${data.province} | ${data.funding_type} | Year: ${data.year}${data.email ? ' | ' + data.email : ''}${data.mobile_number ? ' | ' + data.mobile_number : ''}</div>
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2">Month</th>
+          <th rowspan="2">Gross Sales</th>
+          <th rowspan="2">Products</th>
+          <th rowspan="2">Qty/Volume of Production</th>
+          <th colspan="2">No. of Existing Workers</th>
+          <th colspan="2">No. of New Workers</th>
+          <th colspan="2">No. of Market Outlets</th>
+          <th colspan="2">No. of Raw Material Suppliers</th>
+          <th rowspan="2">Business Status / Innovations / Problems</th>
+        </tr>
+        <tr>
+          <th>Male</th><th>Female</th>
+          <th>Male</th><th>Female</th>
+          <th>Male</th><th>Female</th>
+          <th>Male</th><th>Female</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+        <tr class="total-row">
+          <td>TOTAL</td>
+          <td style="text-align:right">${fmt(total)}</td>
+          <td colspan="11"></td>
+        </tr>
+      </tbody>
+    </table>
+    ${data.remarks ? '<p style="margin-top:12px"><strong>Remarks:</strong> ' + data.remarks + '</p>' : ''}
+    </body></html>`);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  const handleExportExcel = () => {
+    const headerRow1 = ['Month', 'Gross Sales', 'Products', 'Qty/Volume of Production',
+      'No. of Existing Workers', '', 'No. of New Workers', '',
+      'No. of Market Outlets', '', 'No. of Raw Material Suppliers', '',
+      'Business Status / Innovations / Problems'];
+    const headerRow2 = ['', '', '', '', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', 'Male', 'Female', ''];
+
+    const dataRows = MONTHS.map(m => {
+      const d = getDetail(m.key);
+      return [
+        m.label,
+        Number(data[m.key] || 0),
+        d?.products || '',
+        d?.production_volume || '',
+        d?.existing_workers_male || 0,
+        d?.existing_workers_female || 0,
+        d?.new_workers_male || 0,
+        d?.new_workers_female || 0,
+        d?.market_outlets_male || 0,
+        d?.market_outlets_female || 0,
+        d?.raw_material_suppliers_male || 0,
+        d?.raw_material_suppliers_female || 0,
+        d?.business_status || '',
+      ];
+    });
+
+    const totalRow = ['TOTAL', total, '', '', '', '', '', '', '', '', '', '', ''];
+    const wsData = [headerRow1, headerRow2, ...dataRows, totalRow];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    ws['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 1, c: 0 } },
+      { s: { r: 0, c: 1 }, e: { r: 1, c: 1 } },
+      { s: { r: 0, c: 2 }, e: { r: 1, c: 2 } },
+      { s: { r: 0, c: 3 }, e: { r: 1, c: 3 } },
+      { s: { r: 0, c: 4 }, e: { r: 0, c: 5 } },
+      { s: { r: 0, c: 6 }, e: { r: 0, c: 7 } },
+      { s: { r: 0, c: 8 }, e: { r: 0, c: 9 } },
+      { s: { r: 0, c: 10 }, e: { r: 0, c: 11 } },
+      { s: { r: 0, c: 12 }, e: { r: 1, c: 12 } },
+    ];
+
+    ws['!cols'] = [
+      { wch: 12 }, { wch: 14 }, { wch: 30 }, { wch: 30 },
+      { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 },
+      { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 40 },
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, data.firm_name.substring(0, 31));
+    XLSX.writeFile(wb, `${data.firm_name}_GrossSales_${data.year}.xlsx`);
+  };
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between flex-wrap gap-4">
@@ -120,9 +244,17 @@ export default function GrossSalesView() {
             </div>
           </div>
         </div>
-        <Button onClick={() => navigate(`/gross-sales/${id}/edit`)} className="gap-2">
-          <Pencil className="h-4 w-4" /> Edit
-        </Button>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" onClick={handlePrint} className="gap-2">
+            <Printer className="h-4 w-4" /> Print
+          </Button>
+          <Button variant="outline" onClick={handleExportExcel} className="gap-2">
+            <FileSpreadsheet className="h-4 w-4" /> Export Excel
+          </Button>
+          <Button onClick={() => navigate(`/gross-sales/${id}/edit`)} className="gap-2">
+            <Pencil className="h-4 w-4" /> Edit
+          </Button>
+        </div>
       </div>
 
       <Card>
