@@ -109,6 +109,10 @@ export default function GrossSales() {
                       <TableCell>{d.province}</TableCell>
                       <TableCell>{d.funding_type}</TableCell>
                       <TableCell className="font-medium">{d.firm_name}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {d.email && <div>{d.email}</div>}
+                        {d.mobile_number && <div>{d.mobile_number}</div>}
+                      </TableCell>
                       <TableCell>{d.year}</TableCell>
                       <TableCell className="text-right">₱{total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
                       <TableCell className="text-right">
