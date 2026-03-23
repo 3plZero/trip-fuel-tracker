@@ -65,9 +65,9 @@ const inventoryNavigation = [
   { name: 'All Items', href: '/inventory-items', icon: Package },
 ];
 
-const trainingsNavigation = [
-  { name: 'Dashboard', href: '/trainings-dashboard', icon: LayoutDashboard },
-  { name: 'All Trainings', href: '/trainings', icon: GraduationCap },
+const grossSalesNavigation = [
+  { name: 'Dashboard', href: '/gross-sales-dashboard', icon: LayoutDashboard },
+  { name: 'All Records', href: '/gross-sales', icon: DollarSign },
 ];
 
 export default function AppLayout({ children }: AppLayoutProps) {
