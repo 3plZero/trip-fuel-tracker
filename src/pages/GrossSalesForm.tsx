@@ -156,7 +156,7 @@ export default function GrossSalesForm() {
             {MONTHS.slice(0, 3).map(m => (
               <div key={m.key} className="space-y-2">
                 <Label>{m.label}</Label>
-                <Input type="number" step="0.01" value={form[m.key]} onChange={e => set(m.key, parseFloat(e.target.value) || 0)} />
+                <Input type="number" step="0.01" value={form[m.key] || ''} onChange={e => set(m.key, parseFloat(e.target.value) || 0)} placeholder="0" />
               </div>
             ))}
             <div className="md:col-span-3 text-right font-semibold text-muted-foreground">
