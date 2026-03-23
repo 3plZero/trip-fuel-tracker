@@ -68,10 +68,10 @@ export default function GrossSalesDashboard() {
   ];
 
   const stats = [
-    { label: 'Total Gross Sales', value: `₱${totalSales.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'text-emerald-500' },
+    { label: 'Total Gross Sales', value: totalSales.toLocaleString(undefined, { minimumFractionDigits: 2 }), icon: DollarSign, color: 'text-emerald-500' },
     { label: 'Total Firms', value: totalFirms, icon: Building2, color: 'text-blue-500' },
-    { label: '1st Semester', value: `₱${sem1.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, icon: TrendingUp, color: 'text-amber-500' },
-    { label: '2nd Semester', value: `₱${sem2.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, icon: BarChart3, color: 'text-rose-500' },
+    { label: '1st Semester', value: sem1.toLocaleString(undefined, { minimumFractionDigits: 2 }), icon: TrendingUp, color: 'text-amber-500' },
+    { label: '2nd Semester', value: sem2.toLocaleString(undefined, { minimumFractionDigits: 2 }), icon: BarChart3, color: 'text-rose-500' },
   ];
 
   return (
