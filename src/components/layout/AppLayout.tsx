@@ -24,7 +24,7 @@ import {
   Zap,
   Package,
   FolderOpen,
-  GraduationCap,
+  DollarSign,
   Home,
   User,
   Settings,
