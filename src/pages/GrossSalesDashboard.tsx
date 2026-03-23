@@ -113,7 +113,7 @@ export default function GrossSalesDashboard() {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-20} textAnchor="end" height={60} />
                 <YAxis />
-                <Tooltip formatter={(val: number) => `₱${val.toLocaleString()}K`} />
+                <Tooltip formatter={(val: number) => `${val.toLocaleString()}K`} />
                 <Bar dataKey="sales" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
