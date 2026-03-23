@@ -37,7 +37,7 @@ interface AppLayoutProps {
   children: ReactNode;
 }
 
-type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance' | 'inventory-system' | 'technology-trainings';
+type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance' | 'inventory-system' | 'gross-sales';
 
 const fuelReportNavigation = [
   { name: 'Dashboard', href: '/fuel-dashboard', icon: LayoutDashboard },
