@@ -44,7 +44,7 @@ export default function GrossSalesView() {
   const sem2 = q3 + q4;
   const total = sem1 + sem2;
 
-  const fmt = (v: number) => `₱${v.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+  const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2 });
 
   const getDetail = (monthKey: string) => details.find((d: any) => d.month === monthKey);
 

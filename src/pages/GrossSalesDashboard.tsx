@@ -68,10 +68,10 @@ export default function GrossSalesDashboard() {
   ];
 
   const stats = [
-    { label: 'Total Gross Sales', value: `₱${totalSales.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'text-emerald-500' },
+    { label: 'Total Gross Sales', value: totalSales.toLocaleString(undefined, { minimumFractionDigits: 2 }), icon: DollarSign, color: 'text-emerald-500' },
     { label: 'Total Firms', value: totalFirms, icon: Building2, color: 'text-blue-500' },
-    { label: '1st Semester', value: `₱${sem1.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, icon: TrendingUp, color: 'text-amber-500' },
-    { label: '2nd Semester', value: `₱${sem2.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, icon: BarChart3, color: 'text-rose-500' },
+    { label: '1st Semester', value: sem1.toLocaleString(undefined, { minimumFractionDigits: 2 }), icon: TrendingUp, color: 'text-amber-500' },
+    { label: '2nd Semester', value: sem2.toLocaleString(undefined, { minimumFractionDigits: 2 }), icon: BarChart3, color: 'text-rose-500' },
   ];
 
   return (
@@ -113,7 +113,7 @@ export default function GrossSalesDashboard() {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-20} textAnchor="end" height={60} />
                 <YAxis />
-                <Tooltip formatter={(val: number) => `₱${val.toLocaleString()}K`} />
+                <Tooltip formatter={(val: number) => `${val.toLocaleString()}K`} />
                 <Bar dataKey="sales" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -128,7 +128,7 @@ export default function GrossSalesDashboard() {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip formatter={(val: number) => `₱${val.toLocaleString()}K`} />
+                <Tooltip formatter={(val: number) => `${val.toLocaleString()}K`} />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                   {quarterData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
                 </Bar>
@@ -148,7 +148,7 @@ export default function GrossSalesDashboard() {
                   <Cell fill="#0ea5e9" />
                   <Cell fill="#10b981" />
                 </Pie>
-                <Tooltip formatter={(val: number) => `₱${val.toLocaleString()}`} />
+                <Tooltip formatter={(val: number) => val.toLocaleString()} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>

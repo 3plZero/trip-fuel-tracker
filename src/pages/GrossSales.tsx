@@ -114,7 +114,7 @@ export default function GrossSales() {
                         {d.mobile_number && <div>{d.mobile_number}</div>}
                       </TableCell>
                       <TableCell>{d.year}</TableCell>
-                      <TableCell className="text-right">₱{total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                      <TableCell className="text-right">{total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
                           <Button variant="ghost" size="icon" onClick={() => navigate(`/gross-sales/${d.id}`)}><Eye className="h-4 w-4" /></Button>
