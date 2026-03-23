@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Upload } from 'lucide-react';
+import GrossSalesImportDialog, { ImportedGrossSalesData } from '@/components/GrossSalesImportDialog';
 import { GrossSalesMonthlyDetails, MonthlyDetail, emptyMonthlyDetail } from '@/components/GrossSalesMonthlyDetails';
 
 const PROVINCES = ['Abra', 'Apayao', 'Baguio - Benguet', 'Ifugao', 'Kalinga', 'Mountain Province'];
