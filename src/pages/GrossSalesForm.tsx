@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Upload } from 'lucide-react';
+import GrossSalesImportDialog, { ImportedGrossSalesData } from '@/components/GrossSalesImportDialog';
 import { GrossSalesMonthlyDetails, MonthlyDetail, emptyMonthlyDetail } from '@/components/GrossSalesMonthlyDetails';
 
 const PROVINCES = ['Abra', 'Apayao', 'Baguio - Benguet', 'Ifugao', 'Kalinga', 'Mountain Province'];
@@ -63,7 +64,32 @@ export default function GrossSalesForm() {
   );
   const [loading, setLoading] = useState(!!id);
   const [saving, setSaving] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const isEdit = !!id;
+
+  const handleImport = (data: ImportedGrossSalesData) => {
+    setForm(prev => ({
+      ...prev,
+      email: data.email || prev.email,
+      mobile_number: data.mobile_number || prev.mobile_number,
+      year: data.year || prev.year,
+      ...Object.fromEntries(MONTHS.map(m => [m.key, data.monthlySales[m.key] || prev[m.key as keyof FormData]])),
+    }));
+    setMonthlyDetails(prev => {
+      const updated = { ...prev };
+      MONTHS.forEach(m => {
+        const d = data.monthlyDetails[m.key];
+        const hasData = d && (d.products || d.production_volume || d.business_status ||
+          d.existing_workers_male || d.existing_workers_female ||
+          d.new_workers_male || d.new_workers_female ||
+          d.market_outlets_male || d.market_outlets_female ||
+          d.raw_material_suppliers_male || d.raw_material_suppliers_female);
+        if (hasData) updated[m.key] = d;
+      });
+      return updated;
+    });
+    toast({ title: 'Imported', description: 'Data filled from Excel file.' });
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -206,10 +232,17 @@ export default function GrossSalesForm() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
-        <h1 className="text-3xl font-bold text-foreground">{isEdit ? 'Edit' : 'Add'} Gross Sales Record</h1>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
+          <h1 className="text-3xl font-bold text-foreground">{isEdit ? 'Edit' : 'Add'} Gross Sales Record</h1>
+        </div>
+        <Button type="button" variant="outline" onClick={() => setImportOpen(true)} className="gap-2">
+          <Upload className="h-4 w-4" /> Import from Excel
+        </Button>
       </div>
+
+      <GrossSalesImportDialog open={importOpen} onOpenChange={setImportOpen} onImport={handleImport} />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
