@@ -156,7 +156,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <SelectItem value="travel-order">Travel Order System</SelectItem>
                 <SelectItem value="preventive-maintenance">Preventive Maintenance</SelectItem>
                 <SelectItem value="inventory-system">Inventory System</SelectItem>
-                <SelectItem value="technology-trainings">Technology Trainings</SelectItem>
+                <SelectItem value="gross-sales">Gross Sales</SelectItem>
               </SelectContent>
             </Select>
           </div>
