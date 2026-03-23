@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Plane, Wrench, Package, GraduationCap, Settings, User, LogOut, ArrowRight } from 'lucide-react';
+import { FileText, Plane, Wrench, Package, DollarSign, Settings, User, LogOut, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import logo from '@/assets/dost-car-logo-new.png';
@@ -46,11 +46,11 @@ const systems = [
     delay: '300ms',
   },
   {
-    id: 'technology-trainings',
-    name: 'Technology Trainings',
-    description: 'Track technology trainings, participants, and expenditures across CAR provinces',
-    icon: GraduationCap,
-    href: '/trainings-dashboard',
+    id: 'gross-sales',
+    name: 'Gross Sales',
+    description: 'Track and monitor gross sales of assisted firms across CAR provinces',
+    icon: DollarSign,
+    href: '/gross-sales-dashboard',
     gradient: 'from-rose-500 to-pink-600',
     delay: '400ms',
   },

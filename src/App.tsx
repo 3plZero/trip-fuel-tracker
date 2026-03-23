@@ -39,47 +39,25 @@ import InventoryItems from "@/pages/InventoryItems";
 import InventoryItemForm from "@/pages/InventoryItemForm";
 import InventoryItemView from "@/pages/InventoryItemView";
 import ItemScan from "@/pages/ItemScan";
-import TrainingsDashboard from "@/pages/TrainingsDashboard";
-import Trainings from "@/pages/Trainings";
-import TrainingForm from "@/pages/TrainingForm";
-import TrainingView from "@/pages/TrainingView";
+import GrossSalesDashboard from "@/pages/GrossSalesDashboard";
+import GrossSales from "@/pages/GrossSales";
+import GrossSalesForm from "@/pages/GrossSalesForm";
+import GrossSalesView from "@/pages/GrossSalesView";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner size="lg" /></div>;
+  if (!user) return <Navigate to="/auth" replace />;
   return <>{children}</>;
 }
 
 function ProtectedRouteWithLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner size="lg" /></div>;
+  if (!user) return <Navigate to="/auth" replace />;
   return <AppLayout>{children}</AppLayout>;
 }
 
@@ -87,25 +65,23 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/auth" element={<Auth />} />
-      {/* Public route for QR scan - no auth required */}
       <Route path="/scan/:id" element={<ItemScan />} />
-      {/* Main Landing Page */}
       <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-      {/* Fuel Report System Routes */}
+      {/* Fuel Report */}
       <Route path="/fuel-dashboard" element={<ProtectedRouteWithLayout><Dashboard /></ProtectedRouteWithLayout>} />
       <Route path="/trip-tickets" element={<ProtectedRouteWithLayout><TripTickets /></ProtectedRouteWithLayout>} />
       <Route path="/trip-tickets/new" element={<ProtectedRouteWithLayout><TripTicketForm /></ProtectedRouteWithLayout>} />
       <Route path="/trip-tickets/:id" element={<ProtectedRouteWithLayout><TripTicketView /></ProtectedRouteWithLayout>} />
       <Route path="/trip-tickets/:id/edit" element={<ProtectedRouteWithLayout><TripTicketForm /></ProtectedRouteWithLayout>} />
-      {/* Travel Order System Routes */}
+      {/* Travel Order */}
       <Route path="/travel-order-dashboard" element={<ProtectedRouteWithLayout><TravelOrderDashboard /></ProtectedRouteWithLayout>} />
       <Route path="/travel-orders" element={<ProtectedRouteWithLayout><TravelOrders /></ProtectedRouteWithLayout>} />
       <Route path="/travel-orders/new" element={<ProtectedRouteWithLayout><TravelOrderForm /></ProtectedRouteWithLayout>} />
       <Route path="/travel-orders/:id" element={<ProtectedRouteWithLayout><TravelOrderView /></ProtectedRouteWithLayout>} />
       <Route path="/travel-orders/:id/edit" element={<ProtectedRouteWithLayout><TravelOrderForm /></ProtectedRouteWithLayout>} />
-      {/* Preventive Maintenance System Routes */}
+      {/* Preventive Maintenance */}
       <Route path="/maintenance-dashboard" element={<ProtectedRouteWithLayout><MaintenanceDashboard /></ProtectedRouteWithLayout>} />
       <Route path="/vehicle-maintenance" element={<ProtectedRouteWithLayout><VehicleMaintenance /></ProtectedRouteWithLayout>} />
       <Route path="/vehicle-maintenance/new" element={<ProtectedRouteWithLayout><VehicleMaintenanceForm /></ProtectedRouteWithLayout>} />
@@ -121,20 +97,20 @@ function AppRoutes() {
       <Route path="/generator-maintenance/:id/edit" element={<ProtectedRouteWithLayout><GeneratorMaintenanceForm /></ProtectedRouteWithLayout>} />
       <Route path="/generators" element={<ProtectedRouteWithLayout><Generators /></ProtectedRouteWithLayout>} />
       <Route path="/buildings" element={<ProtectedRouteWithLayout><Buildings /></ProtectedRouteWithLayout>} />
-      {/* Inventory System Routes */}
+      {/* Inventory */}
       <Route path="/inventory-dashboard" element={<ProtectedRouteWithLayout><InventoryDashboard /></ProtectedRouteWithLayout>} />
       <Route path="/inventory-categories" element={<ProtectedRouteWithLayout><InventoryCategories /></ProtectedRouteWithLayout>} />
       <Route path="/inventory-items" element={<ProtectedRouteWithLayout><InventoryItems /></ProtectedRouteWithLayout>} />
       <Route path="/inventory-items/new" element={<ProtectedRouteWithLayout><InventoryItemForm /></ProtectedRouteWithLayout>} />
       <Route path="/inventory-items/:id" element={<ProtectedRouteWithLayout><InventoryItemView /></ProtectedRouteWithLayout>} />
       <Route path="/inventory-items/:id/edit" element={<ProtectedRouteWithLayout><InventoryItemForm /></ProtectedRouteWithLayout>} />
-      {/* Technology Trainings System Routes */}
-      <Route path="/trainings-dashboard" element={<ProtectedRouteWithLayout><TrainingsDashboard /></ProtectedRouteWithLayout>} />
-      <Route path="/trainings" element={<ProtectedRouteWithLayout><Trainings /></ProtectedRouteWithLayout>} />
-      <Route path="/trainings/new" element={<ProtectedRouteWithLayout><TrainingForm /></ProtectedRouteWithLayout>} />
-      <Route path="/trainings/:id" element={<ProtectedRouteWithLayout><TrainingView /></ProtectedRouteWithLayout>} />
-      <Route path="/trainings/:id/edit" element={<ProtectedRouteWithLayout><TrainingForm /></ProtectedRouteWithLayout>} />
-      {/* Shared Routes */}
+      {/* Gross Sales */}
+      <Route path="/gross-sales-dashboard" element={<ProtectedRouteWithLayout><GrossSalesDashboard /></ProtectedRouteWithLayout>} />
+      <Route path="/gross-sales" element={<ProtectedRouteWithLayout><GrossSales /></ProtectedRouteWithLayout>} />
+      <Route path="/gross-sales/new" element={<ProtectedRouteWithLayout><GrossSalesForm /></ProtectedRouteWithLayout>} />
+      <Route path="/gross-sales/:id" element={<ProtectedRouteWithLayout><GrossSalesView /></ProtectedRouteWithLayout>} />
+      <Route path="/gross-sales/:id/edit" element={<ProtectedRouteWithLayout><GrossSalesForm /></ProtectedRouteWithLayout>} />
+      {/* Shared */}
       <Route path="/vehicles" element={<ProtectedRouteWithLayout><Vehicles /></ProtectedRouteWithLayout>} />
       <Route path="/drivers" element={<ProtectedRouteWithLayout><Drivers /></ProtectedRouteWithLayout>} />
       <Route path="/reports" element={<ProtectedRouteWithLayout><Reports /></ProtectedRouteWithLayout>} />

@@ -24,7 +24,7 @@ import {
   Zap,
   Package,
   FolderOpen,
-  GraduationCap,
+  DollarSign,
   Home,
   User,
   Settings,
@@ -37,7 +37,7 @@ interface AppLayoutProps {
   children: ReactNode;
 }
 
-type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance' | 'inventory-system' | 'technology-trainings';
+type SystemType = 'fuel-report' | 'travel-order' | 'preventive-maintenance' | 'inventory-system' | 'gross-sales';
 
 const fuelReportNavigation = [
   { name: 'Dashboard', href: '/fuel-dashboard', icon: LayoutDashboard },
@@ -65,9 +65,9 @@ const inventoryNavigation = [
   { name: 'All Items', href: '/inventory-items', icon: Package },
 ];
 
-const trainingsNavigation = [
-  { name: 'Dashboard', href: '/trainings-dashboard', icon: LayoutDashboard },
-  { name: 'All Trainings', href: '/trainings', icon: GraduationCap },
+const grossSalesNavigation = [
+  { name: 'Dashboard', href: '/gross-sales-dashboard', icon: LayoutDashboard },
+  { name: 'All Records', href: '/gross-sales', icon: DollarSign },
 ];
 
 export default function AppLayout({ children }: AppLayoutProps) {
@@ -80,7 +80,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     if (path.includes('travel-order')) return 'travel-order';
     if (path.includes('maintenance') || path.includes('generator') || path.includes('building')) return 'preventive-maintenance';
     if (path.includes('inventory')) return 'inventory-system';
-    if (path.includes('training')) return 'technology-trainings';
+    if (path.includes('gross-sales')) return 'gross-sales';
     return 'fuel-report';
   });
 
@@ -90,8 +90,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
       ? travelOrderNavigation 
       : currentSystem === 'inventory-system'
         ? inventoryNavigation
-        : currentSystem === 'technology-trainings'
-          ? trainingsNavigation
+        : currentSystem === 'gross-sales'
+          ? grossSalesNavigation
           : preventiveMaintenanceNavigation;
 
   return (
@@ -156,7 +156,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <SelectItem value="travel-order">Travel Order System</SelectItem>
                 <SelectItem value="preventive-maintenance">Preventive Maintenance</SelectItem>
                 <SelectItem value="inventory-system">Inventory System</SelectItem>
-                <SelectItem value="technology-trainings">Technology Trainings</SelectItem>
+                <SelectItem value="gross-sales">Gross Sales</SelectItem>
               </SelectContent>
             </Select>
           </div>
